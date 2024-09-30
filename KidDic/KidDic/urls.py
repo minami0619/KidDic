@@ -17,9 +17,12 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path
-from app.views import PortfolioView
+from app.views import PortfolioView, SignupView, LoginView, HomeView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('',PortfolioView.as_view(), name="portfolio")
+    path('',PortfolioView.as_view(), name="portfolio"),
+    path('signup/',SignupView.as_view(), name="signup"),
+    path('login/',LoginView.as_view(), name="login"),
+    path('home/',HomeView.as_view(), name="home"),
 ]
