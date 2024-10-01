@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,7 +6,57 @@
     <title>KidDic</title>
 </head>
 <body>
-    <h1>ポートフォリオページ</h1>
+    <h1>ポートフォリオ</h1>
     <a href="{% url 'login' %}">アプリへ</a>    
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KidDic</title>
+    <style>
+        /* body全体を中央揃え */
+        body {
+            display: flex;
+            justify-content: center;  /* 横方向の中央揃え */
+            align-items: center;      /* 縦方向の中央揃え */
+            height: 100vh;            /* 画面全体の高さを確保 */
+            margin: 0;                /* 余白を無くす */
+            font-family: Arial, sans-serif;  /* フォントの設定 */
+            background-color: #f4f4f9;  /* 背景色 */
+        }
+
+        /* 中央に表示するコンテンツのスタイル */
+        .container {
+            text-align: center;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        /* ボタンのスタイル */
+        a {
+            text-decoration: none;
+            color: white;
+            background-color: #007BFF;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        a:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ポートフォリオ</h1>
+        <a href="{% url 'login' %}">アプリへ</a>    
+    </div>
 </body>
 </html>

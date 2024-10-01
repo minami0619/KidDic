@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -8,5 +8,47 @@
 <body>
     <h1>ログイン画面</h1>
     <a href="{% url 'signup' %}">新規アカウント登録</a>         
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KidDic</title>
+    <style>
+        /* body全体を中央揃え */
+        body {
+            display: flex;
+            justify-content: center;/* 横方向の中央揃え */
+            align-items: center;/* 縦方向の中央揃え */
+            height: 100vh;/* 画面全体の高さを確保 */
+            margin: 0;/* 余白を無くす */
+            font-family: Arial, sans-serif;/* フォントの設定 */
+            text-align: center;
+        }
+        .container {
+            margin: 0;
+        }
+        h1 {
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+        a {
+            display: block;
+            margin-top: 20px;
+            font-size: 16px;
+            text-decoration: none;
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>KidDic</h1>
+        <p>我が子だけの名言辞典</p>
+        <a href="{% url 'signup' %}">新規アカウント登録</a>
+    </div>
 </body>
 </html>

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -6,6 +6,99 @@
     <title>KidDic</title>
 </head>
 <body>
-    <h1>新規登録画面</h1>    
+    <h1>新規登録画面</h1>
+    <form method="post">
+        {% csrf_token %}
+        <div>名前／ニックネーム <input type="text" name="username" value="{{ form.name.value|default:''}}"></div>
+        <div>メールアドレス<input type="email" name="email"></div>
+        <div>パスワード<input type="password" name="password1"></div>
+        <div>確認用パスワード<input type="password" name="password2"></div>
+        <button type="submit">新規登録</button>
+    </form>
+    {{ form.errors }} 
+    <a href="{% url 'login'}">ログイン画面へ戻る</a>   
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KidDic - 新規登録</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        h1 {
+            font-size: 24px; /* タイトルのサイズ */
+            margin-bottom: 15px; /* タイトルとフォームの隙間 */
+        }
+        .form-group {
+            display: flex;
+            align-items: center; /* ラベルと入力フィールドを中央揃え */
+            margin-bottom: 10px; /* 各入力フィールドの隙間 */
+        }
+        label {
+            width: 200px; /* ラベルの幅 */
+            text-align: right; /* ラベルを左揃え */
+            margin-right: 10px; /* ラベルと入力フィールドの隙間 */
+        }
+        input {
+            padding: 8px; /* パディング */
+            flex: 1; /* 入力フィールドの幅を可変に */
+        }
+        button {
+            padding: 10px;
+            background-color: #cecece; /* ボタンの背景色 */
+            color: black; /* ボタンの文字色 */
+            border: none; /* ボーダーをなしに */
+            border-radius: 5px; /* ボタンの角を丸く */
+            cursor: pointer; /* カーソルをポインタに */
+            width: 40%; /* ボタンの幅を100%に */
+            font-size: 14px; /* ボタンの文字サイズを大きく */
+        }
+        a {
+            display: block;
+            margin-top: 10px; /* 上部の隙間 */
+            font-size: 14px; /* リンクの文字サイズ */
+            color: grey; /* リンクの文字色 */
+            text-decoration: underline; /* 下線を追加 */
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>新規アカウント登録</h1>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="username">名前／ニックネーム :</label>
+                <input type="text" id="username" name="username" value="{{ form.name.value|default:'' }}">
+            </div>
+            <div class="form-group">
+                <label for="email">メールアドレス :</label>
+                <input type="email" id="email" name="email">
+            </div>
+            <div class="form-group">
+                <label for="password1">パスワード :</label>
+                <input type="password" id="password1" name="password1">
+            </div>
+            <div class="form-group">
+                <label for="password2">確認用パスワード :</label>
+                <input type="password" id="password2" name="password2">
+            </div>
+            <button type="submit">新規登録</button>
+        </form>
+        {{ form.errors }} 
+        <a href="{% url 'login' %}">ログイン画面へ戻る</a>   
+    </div>
 </body>
 </html>
