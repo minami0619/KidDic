@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KidDic</title>
+    <title>KidDic - アカウント情報変更</title>
     <style>
-        /* body全体を中央揃え */
         body {
             display: flex;
             justify-content: center; /* 横方向の中央揃え */
@@ -20,12 +19,8 @@
             padding: 20px;
         }
         h1 {
-            font-size: 60px;
-            margin-bottom: 5px; /* タイトルとテキストの行間を狭める */
-        }
-        p {
-            font-size: 20px;
-            margin-bottom: 40px; /* 説明文とフォームの行間を狭める */
+            font-size: 30px;
+            margin-bottom: 30px; /* タイトルとテキストの行間を狭める */
         }
         .form-group {
             display: flex; /* 横並びにする */
@@ -73,22 +68,33 @@
 </head>
 <body>
     <div class="container">
-        <h1>KidDic</h1>
-        <p>我が子だけの名言辞典</p>
+        <h1>アカウント情報変更</h1>
         <form method="post">
             {% csrf_token %}
             <div class="form-group">
-                <label for="email">メールアドレス　:</label>
-                <input type="email" id="email" name="email">
+                <label for="username">名前／ニックネーム:</label>
+                <input type="text" id="username" name="username" value="{{ form.username.value|default:'' }}">
             </div>
             <div class="form-group">
-                <label for="password">パスワード　:</label>
-                <input type="password" id="password1" name="password">
+                <label for="email">メールアドレス:</label>
+                <input type="email" id="email" name="email" value="{{ form.email.value|default:'' }}">
             </div>
-            <button type="submit">ログイン</button>
+            <div class="form-group">
+                <label for="current_password">現在のパスワード:</label>
+                <input type="password" id="current_password" name="current_password">
+            </div>
+            <div class="form-group">
+                <label for="password1">新しいパスワード:</label>
+                <input type="password" id="password1" name="password1">
+            </div>
+            <div class="form-group">
+                <label for="password2">新しいパスワード確認:</label>
+                <input type="password" id="password2" name="password2">
+            </div>
+            <button type="submit">変更を保存</button>
         </form>
         {{ form.errors }}
-        <a href="{% url 'signup' %}">新規アカウント登録</a>
+        <a href="{% url 'home' %}">ホームに戻る</a>   
     </div>
 </body>
 </html>
