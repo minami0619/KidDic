@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect
 from django.views import View
-from app.forms import SignupForm, LoginForm, AccountInfoForm
+from app.forms import SignupForm, LoginForm, AccountInfoForm, ChildForm, QuoteForm
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.contrib.auth.models import User
+from app.models import Child, Quote
 
 # Create your views here.
 
@@ -42,17 +43,48 @@ class LoginView(View):
             "form": form
         })    
 
-class HomeView(View):
+class HomeView(LoginRequiredMixin, View):
+    login_url = "login"
     def get(self, request):
         return render(request, "home.html")
+    def get(self, request):
+        quotes = Quote.objects.filter(child__family=request.user)
+
+        # フィルタリング
+        keyword = request.GET.get('keyword')
+        month = request.GET.get('month')
+        category = request.GET.get('category')
+        speaker = request.GET.get('speaker')
+        sort_order = request.GET.get('sort_order', 'newest')
+
+        if keyword:
+            quotes = quotes.filter(content__icontains=keyword)
+        if month:
+            quotes = quotes.filter(created_at__month=month)  # 修正：created_atに基づいてフィルタリング
+        if category:
+            quotes = quotes.filter(category__id=category)
+        if speaker:
+            quotes = quotes.filter(child__nickname__icontains=speaker)
+
+        # ソート
+        if sort_order == 'newest':
+            quotes = quotes.order_by('-created_at')  # 修正：created_atでソート
+        elif sort_order == 'alphabet':
+            quotes = quotes.order_by('content')
+        elif sort_order == 'year':
+            quotes = quotes.order_by('created_at')
+
+        return render(request, 'home.html', {'quotes': quotes})
+
 
 class AccountInfoView(LoginRequiredMixin, View):
     def get(self, request):
         user = request.user  # 現在のユーザーを取得
         form = AccountInfoForm(initial={
             'username': user.username,
-            'email': user.email
-        })  # フォームに現在のユーザー情報を渡す
+            'email': user.email,
+            'current_user': user  # 現在のユーザーを initial に設定
+        })
         return render(request, "account_info.html", {
             "form": form
         })
@@ -83,8 +115,38 @@ class AccountInfoView(LoginRequiredMixin, View):
 
         return render(request, "account_info.html", {
             "form": form
-        })
+        })    
 
+class ChildCreateView(LoginRequiredMixin, View):
+    def get(self, request):
+        form = ChildForm()
+        return render(request, "child_form.html", context={"form": form})
+
+    def post(self, request):
+        form = ChildForm(request.POST)
+        if form.is_valid():
+            child = form.save(commit=False)
+            child.family = request.user
+            child.save()
+            return redirect("home")
+        return render(request, "child_form.html", context={"form": form})
+
+class QuoteCreateView(LoginRequiredMixin, View):
+    def get(self, request):
+        form = QuoteForm()
+        return render(request, "quote_form.html", context={"form": form})
+
+    def post(self, request):
+        form = QuoteForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("home")
+        return render(request, "quote_form.html", context={"form": form})
+
+class QuoteListView(LoginRequiredMixin, View):
+    def get(self, request):
+        quotes = Quote.objects.filter(child__family=request.user)
+        return render(request, 'quote_list.html', {'quotes': quotes})
 
 
 # class AccountInfoView(LoginRequiredMixin, View):
@@ -163,4 +225,3 @@ class AccountInfoView(LoginRequiredMixin, View):
 #                 messages.error(request, '現在のパスワードが正しくありません。')
         
 #         return render(request, "account_info.html", {'form': form})
-

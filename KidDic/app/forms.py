@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from app.models import User
+from app.models import User, Child, Quote
 from django.contrib.auth import authenticate
 
 class SignupForm(UserCreationForm):
@@ -50,3 +50,13 @@ class AccountInfoForm(forms.Form):
             raise forms.ValidationError("新しいパスワードが一致しません。")
         
         return cleaned_data
+
+class ChildForm(forms.ModelForm):
+    class Meta:
+        model = Child
+        fields = ['nickname', 'birthdate']
+
+class QuoteForm(forms.ModelForm):
+    class Meta:
+        model = Quote
+        fields = ['child', 'content', 'description', 'public']

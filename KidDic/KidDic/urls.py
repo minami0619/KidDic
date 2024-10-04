@@ -17,7 +17,7 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path
-from app.views import PortfolioView, SignupView, LoginView, HomeView, AccountInfoView
+from app.views import PortfolioView, SignupView, LoginView, HomeView, AccountInfoView, ChildCreateView, QuoteCreateView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -26,4 +26,6 @@ urlpatterns = [
     path('login/',LoginView.as_view(), name="login"),
     path('home/',HomeView.as_view(), name="home"),
     path('account-info/', AccountInfoView.as_view(), name='account_info'),
+    path('children/add/', ChildCreateView.as_view(), name='child_add'),
+    path('quotes/add/', QuoteCreateView.as_view(), name='quote_add'),
 ]

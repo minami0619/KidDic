@@ -183,3 +183,44 @@
     </header>
 </body>
 </html>
+
+<h1>KidDic</h1>
+
+<form method="get" action="{% url 'home' %}">
+    <input type="text" name="keyword" placeholder="キーワード" value="{{ request.GET.keyword }}">
+    <select name="month">
+        <option value="">月</option>
+        <!-- 月のオプションを追加 -->
+    </select>
+    <select name="category">
+        <option value="">カテゴリ</option>
+        <!-- カテゴリのオプションを追加 -->
+    </select>
+    <select name="speaker">
+        <option value="">発言者</option>
+        <!-- 発言者のオプションを追加 -->
+    </select>
+    <button type="submit">検索</button>
+    <select name="sort_order">
+        <option value="newest">新着順</option>
+        <option value="alphabet">五十音順</option>
+        <option value="year">年代順</option>
+    </select>
+</form>
+
+<ul>
+    {% for quote in quotes %}
+    <li>
+        <p>{{ quote.child.nickname }} ({{ quote.start_date|date:"Y/m" }} 〜 {{ quote.end_date|date:"Y/m" }})</p>
+        <p>{{ quote.content }}</p>
+        <p><a href="{% url 'quote_edit' quote.id %}">編集</a></p>
+        <p>コメント数: {{ quote.comment_set.count }}</p>
+        <img src="{{ quote.image_url }}" alt="quote image">
+    </li>
+    {% empty %}
+    <li>名言が登録されていません。</li>
+    {% endfor %}
+</ul>
+
+<!-- 名言登録へのリンク -->
+<a href="{% url 'quote_add' %}" class="fixed-button">+</a>
