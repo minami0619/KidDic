@@ -14,6 +14,7 @@ class User(AbstractUser):
     email = models.EmailField(max_length=255, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    family = models.ForeignKey('Family', on_delete=models.SET_NULL, null=True, blank=True)  # 家族との関連付け
 
     USERNAME_FIELD = "username"
     EMAIL_FIELD = "email"
@@ -23,7 +24,7 @@ class User(AbstractUser):
         db_table = "users"
 
 class Child(models.Model):
-    family = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    family = models.ForeignKey('Family', on_delete=models.CASCADE)  # Familyモデルに関連付け
     nickname = models.CharField(max_length=255)
     birthdate = models.DateField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -42,3 +43,29 @@ class Quote(models.Model):
 
     def __str__(self):
         return self.content
+
+class Comment(models.Model):
+    quote = models.ForeignKey(Quote, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.content[:20]  # コメントの先頭20文字を返す
+
+class Category(models.Model):
+    category_name = models.CharField(max_length=255)  # カテゴリ名
+    created_at = models.DateTimeField(auto_now_add=True)  # 作成日時
+    updated_at = models.DateTimeField(auto_now=True)  # 更新日時
+
+    def __str__(self):
+        return self.category_name
+
+class Family(models.Model):
+    invite_url = models.CharField(max_length=255)  # 家族招待用のURL
+    created_at = models.DateTimeField(auto_now_add=True)  # 作成日時
+    updated_at = models.DateTimeField(auto_now=True)  # 更新日時
+
+    def __str__(self):
+        return self.invite_url  # URLを文字列表現として返す

@@ -1,0 +1,96 @@
+{% load static %}
+<h1>{{ quote.content }}</h1>
+<p>{{ quote.child.nickname }} - {{ quote.created_at|date:"Y/m/d" }}</p>
+<p>登録者: {{ quote.user.username }}</p>
+
+<!-- 画像のタップでモーダル表示 -->
+<img src="{{ quote.image_url }}" alt="名言の画像" id="quote-image" onclick="showModal()">
+
+<!-- モーダルウィンドウの構造 -->
+<div id="myModal" class="modal">
+  <span class="close" onclick="closeModal()">&times;</span>
+  <img class="modal-content" id="modalImage">
+  <div id="caption"></div>
+</div>
+
+<!-- SNS公開トグルボタン -->
+<form method="post" action="{% url 'quote_toggle_sns' quote.id %}">
+    {% csrf_token %}
+    <label>SNS公開</label>
+    <input type="checkbox" name="public" {% if quote.public %}checked{% endif %} onchange="this.form.submit()">
+</form>
+
+<!-- コメント表示 -->
+<h2>コメント</h2>
+<ul>
+    {% for comment in comments %}
+    <li>{{ comment.user.username }}: {{ comment.content }} - {{ comment.created_at|date:"Y/m/d H:i" }}
+        {% if comment.user == request.user %}
+        <form method="post" action="{% url 'comment_delete' comment.id %}">
+            {% csrf_token %}
+            <button type="submit">削除</button>
+        </form>
+        {% endif %}
+    </li>
+    {% empty %}
+    <li>コメントはまだありません。</li>
+    {% endfor %}
+</ul>
+
+<!-- コメント追加フォーム -->
+<h3>コメントを追加</h3>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">コメントを投稿</button>
+</form>
+
+<!-- モーダルのCSSスタイル -->
+<style>
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  padding-top: 60px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.7);
+}
+
+.modal-content {
+  margin: auto;
+  display: block;
+  width: 80%;
+  max-width: 700px;
+}
+
+.close {
+  position: absolute;
+  top: 15px;
+  right: 35px;
+  color: white;
+  font-size: 40px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.close:hover, .close:focus {
+  color: #bbb;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+#caption {
+  text-align: center;
+  color: #ccc;
+  padding: 10px 20px;
+}
+</style>
+
+<!-- 静的ファイルとしてのJavaScriptを読み込み -->
+<script src="{% static 'js/modal.js' %}"></script>
+
+    

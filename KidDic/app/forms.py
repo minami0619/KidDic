@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from app.models import User, Child, Quote
+from app.models import User, Child, Quote, Comment
 from django.contrib.auth import authenticate
 
 class SignupForm(UserCreationForm):
@@ -60,3 +60,9 @@ class QuoteForm(forms.ModelForm):
     class Meta:
         model = Quote
         fields = ['child', 'content', 'description', 'public']
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['content']
+        

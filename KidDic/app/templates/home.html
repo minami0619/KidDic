@@ -16,211 +16,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KidDic</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif; /* 新規登録画面と同じフォント */
-        }
-
-        /* Navbar & Navmenu color */
-        :root {
-            --background-navbar: rgba(55, 55, 55, 0.98);
-        }
-
-        .header {
-            background: var(--background-navbar);
-            position: fixed;
-            width: 100%;
-            height: 52px;
-        }
-
-        /* Nav items */
-        .menu {
-            list-style: none;
-            position: absolute;
-            width: 100%;
-            height: auto;
-            top: 0;
-            margin-top: 52px;
-            padding: 0 0 10px 0;
-            clear: both;
-            background: var(--background-navbar);
-            transition: 0.3192s cubic-bezier(0.04, 0.04, 0.12, 0.96) 0.1008s;
-            transform: scale(1, 0);
-            transform-origin: top;
-        }
-
-        /* Hamburger menu button */
-        .menu-btn:checked ~ .menu {
-            transform: scale(1, 1);
-            transform-origin: top;
-            transition: 0.3192s cubic-bezier(0.04, 0.04, 0.12, 0.96) 0.1008s;
-        }
-
-        /* Hamburger menu text */
-        .menu a {
-            text-decoration: none;
-            font-weight: 500;
-            letter-spacing: 2px;
-            font-size: 16px;
-            text-transform: capitalize;
-            color: #ddd;
-            opacity: 0;
-            transition: 0.5s;
-        }
-
-        .menu li {
-            border-top: 1px solid rgb(75, 75, 75);
-            padding: 15px 0;
-            margin: 0 54px;
-            opacity: 0;
-            transition: 0.5s;
-        }
-
-        .menu-btn:checked ~ .menu a,
-        .menu-btn:checked ~ .menu li {
-            opacity: 1;
-            transition: 0.3192s cubic-bezier(0.04, 0.04, 0.12, 0.96) 0.2s;
-        }
-
-        .menu-btn {
-            display: none;
-        }
-
-        .menu-icon {
-            display: inline-block;
-            position: relative;
-            cursor: pointer;
-            padding: 24px 14px;
-            -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-        }
-
-        .navicon {
-            background: #ddd;
-            display: block;
-            height: 3px;
-            width: 26px;
-            position: relative;
-            transition: 0.3192s cubic-bezier(0.04, 0.04, 0.12, 0.96) 0.1008s;
-        }
-
-        .navicon:before,
-        .navicon:after {
-            content: "";
-            display: block;
-            height: 100%;
-            width: 100%;
-            position: absolute;
-            background: #ddd;
-            transition: 0.3192s cubic-bezier(0.04, 0.04, 0.12, 0.96) 0.1008s;
-        }
-
-        .navicon:before {
-            top: 9px;
-        }
-
-        .navicon:after {
-            bottom: 9px;
-        }
-
-        /* Hamburger Menu Animation Start */
-        .menu-btn:checked ~ .menu-icon .navicon:before {
-            transform: rotate(-45deg);
-        }
-
-        .menu-btn:checked ~ .menu-icon .navicon:after {
-            transform: rotate(45deg);
-        }
-
-        .menu-btn:checked ~ .menu-icon:not(.steps) .navicon:before {
-            top: 0;
-        }
-        .menu-btn:checked ~ .menu-icon:not(.steps) .navicon:after {
-            bottom: 0;
-        }
-
-        .menu-btn:checked ~ .menu-icon .navicon {
-            background: rgba(0, 0, 0, 0);
-            transition: 0.2192s cubic-bezier(0.04, 0.04, 0.12, 0.96) 0.1008s;
-        }
-        /* Hamburger Menu Animation End */
-
-        /* Navbar Container */
-        .navtext-container {
-            width: 100%;
-            height: 52px;
-            position: absolute;
-            box-sizing: border-box;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* Navbar Text */
-        .navtext {
-            position: absolute;
-            text-transform: none; /* 大文字化を解除 */
-            color: #ddd;
-            letter-spacing: 4px;
-            font-size: 30px;
-        }
-    </style>
+    <title>KidDic - 名言辞典</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
-    <header class="header">
-        <div class="navtext-container">
-            <div class="navtext">KidDic</div>
-        </div>
-        <input type="checkbox" class="menu-btn" id="menu-btn">
-        <label for="menu-btn" class="menu-icon"><span class="navicon"></span></label>
-        <ul class="menu">
-            <li><a href="{% url 'account_info' %}">アカウント情報変更</a></li>
-            <li><a href="#children-list">お子さま一覧</a></li>
-            <li><a href="#invite-family">家族招待</a></li>
-            <li><a href="#logout">ログアウト</a></li>
-        </ul>
+    <header>
+        <h1>KidDic</h1>
+        <nav>
+            <a href="{% url 'home' %}">ホーム</a>
+            <a href="#">メニュー</a>
+        </nav>
     </header>
+
+    <!-- 検索フォーム -->
+    <section class="search-section">
+        <form method="get" action="{% url 'home' %}">
+            <input type="text" name="keyword" placeholder="キーワード" value="{{ request.GET.keyword }}">
+            <select name="month">
+                <option value="">月</option>
+                <!-- 月の選択肢を追加 -->
+            </select>
+            <select name="category">
+                <option value="">カテゴリ</option>
+                <!-- カテゴリの選択肢を追加 -->
+            </select>
+            <select name="speaker">
+                <option value="">発言者</option>
+                <!-- 発言者の選択肢を追加 -->
+            </select>
+            <button type="submit">検索</button>
+            <select name="sort_order">
+                <option value="newest">新着順</option>
+                <option value="alphabet">五十音順</option>
+                <option value="year">年代順</option>
+            </select>
+        </form>
+    </section>
+
+    <!-- 名言一覧 -->
+    <section class="quote-list">
+        <ul>
+            {% for quote in quotes %}
+            <li class="quote-item">
+                <p>{{ quote.child.nickname }} {{ quote.created_at|date:"Y/m" }} - {{ quote.content }}</p>
+                <div class="quote-details">
+                    <img src="{{ quote.image_url }}" alt="quote image">
+                    <p>コメント数: {{ quote.comment_set.count }}</p>
+                    <a href="{% url 'quote_edit' quote.id %}">編集</a>
+                </div>
+            </li>
+            {% empty %}
+            <li>名言が登録されていません。</li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <!-- モーダルの構造 -->
+    <div id="quoteModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>名言を登録</h2>
+            <form method="post" action="{% url 'quote_add' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+            
+                <!-- デバッグ用: childrenの内容を表示 -->
+                <ul>
+                    {% for child in children %}
+                        <li>{{ child.nickname }}</li>  <!-- デバッグ：ニックネームを表示 -->
+                    {% endfor %}
+                </ul>
+
+                <!-- 子どもを選択するプルダウンメニュー -->
+                <label for="child">子どもを選択:</label>
+                <select name="child" id="child" required>
+                    {% for child in children %}
+                        <option value="{{ child.id }}">{{ child.nickname }}</option>
+                    {% endfor %}
+                 </select>
+
+                <!-- 名言 -->
+                <label for="content">名言 <span style="color:red;">※必須</span></label>
+                <input type="text" name="content" id="content" required>
+
+                <!-- 日付 -->
+                <label for="date">日付</label>
+                <input type="date" name="date" id="date" value="{{ today_date }}">
+
+                <!-- テキストエリア (任意の追加情報) -->
+                <label for="description">説明</label>
+                <textarea name="description" id="description"></textarea>
+
+                <!-- カテゴリ選択 -->
+                <label for="category">カテゴリ</label>
+                <select name="category" id="category">
+                    {% for category in categories %}
+                    <option value="{{ category.id }}">{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+
+                <!-- 画像のアップロード -->
+                <label for="image">写真</label>
+                <input type="file" name="image" id="image">
+
+                <button type="submit">登録</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 固定ボタンでモーダルを開く -->
+    <button class="add-quote-btn" onclick="openModal()">➕</button>
+
+    <script src="{% static 'js/modal.js' %}"></script>
 </body>
 </html>
-
-<h1>KidDic</h1>
-
-<form method="get" action="{% url 'home' %}">
-    <input type="text" name="keyword" placeholder="キーワード" value="{{ request.GET.keyword }}">
-    <select name="month">
-        <option value="">月</option>
-        <!-- 月のオプションを追加 -->
-    </select>
-    <select name="category">
-        <option value="">カテゴリ</option>
-        <!-- カテゴリのオプションを追加 -->
-    </select>
-    <select name="speaker">
-        <option value="">発言者</option>
-        <!-- 発言者のオプションを追加 -->
-    </select>
-    <button type="submit">検索</button>
-    <select name="sort_order">
-        <option value="newest">新着順</option>
-        <option value="alphabet">五十音順</option>
-        <option value="year">年代順</option>
-    </select>
-</form>
-
-<ul>
-    {% for quote in quotes %}
-    <li>
-        <p>{{ quote.child.nickname }} ({{ quote.start_date|date:"Y/m" }} 〜 {{ quote.end_date|date:"Y/m" }})</p>
-        <p>{{ quote.content }}</p>
-        <p><a href="{% url 'quote_edit' quote.id %}">編集</a></p>
-        <p>コメント数: {{ quote.comment_set.count }}</p>
-        <img src="{{ quote.image_url }}" alt="quote image">
-    </li>
-    {% empty %}
-    <li>名言が登録されていません。</li>
-    {% endfor %}
-</ul>
-
-<!-- 名言登録へのリンク -->
-<a href="{% url 'quote_add' %}" class="fixed-button">+</a>
