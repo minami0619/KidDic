@@ -21,61 +21,93 @@
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
-    <header>
-        <h1>KidDic</h1>
-        <nav>
-            <a href="{% url 'home' %}">ホーム</a>
-            <a href="#">メニュー</a>
-        </nav>
+
+    <!-- ハンバーガーメニューの実装 -->
+    <header class="header">
+        <div class="navtext-container">
+            <div class="navtext">KidDic</div>
+        </div>
+        <input type="checkbox" class="menu-btn" id="menu-btn">
+        <label for="menu-btn" class="menu-icon"><span class="navicon"></span></label>
+        <ul class="menu">
+            <li><a href="{% url 'account_info' %}">アカウント情報変更</a></li>
+            <li><a href="#children-list">お子さま一覧</a></li>
+            <li><a href="#invite-family">家族招待</a></li>
+            <li><a href="#logout">ログアウト</a></li>
+        </ul>
     </header>
 
-    <!-- 検索フォーム -->
-    <section class="search-section">
-        <form method="get" action="{% url 'home' %}">
-            <input type="text" name="keyword" placeholder="キーワード" value="{{ request.GET.keyword }}">
-            <select name="month">
-                <option value="">月</option>
-                <!-- 月の選択肢を追加 -->
-            </select>
-            <select name="category">
-                <option value="">カテゴリ</option>
-                <!-- カテゴリの選択肢を追加 -->
-            </select>
-            <select name="speaker">
-                <option value="">発言者</option>
-                <!-- 発言者の選択肢を追加 -->
-            </select>
-            <button type="submit">検索</button>
-            <select name="sort_order">
-                <option value="newest">新着順</option>
-                <option value="alphabet">五十音順</option>
-                <option value="year">年代順</option>
-            </select>
-        </form>
-    </section>
+    <main>
+        <!-- 検索フォーム -->
+        <section class="search-section">
+            <form method="get" action="{% url 'home' %}" class="search-form">
+                <input type="text" name="keyword" placeholder="キーワード" value="{{ request.GET.keyword }}" class="search-input">
 
-    <!-- 名言一覧 -->
-    <section class="quote-list">
-        <ul>
-            {% for quote in quotes %}
-            <li class="quote-item">
-                <p>{{ quote.child.nickname }} {{ quote.created_at|date:"Y/m" }} - {{ quote.content }}</p>
-                <div class="quote-details">
-                    <img src="{{ quote.image_url }}" alt="quote image">
-                    <p>コメント数: {{ quote.comment_set.count }}</p>
-                    <a href="{% url 'quote_edit' quote.id %}">編集</a>
+                <!-- 月の選択肢 -->
+                <select name="month" class="search-select">
+                    <option value="">月</option>
+                    {% for month in months %}
+                        <option value="{{ month }}" {% if request.GET.month == month %}selected{% endif %}>{{ month }}月</option>
+                    {% endfor %}
+                </select>
+
+                <!-- カテゴリの選択肢 -->
+                <select name="category" class="search-select">
+                    <option value="">カテゴリ</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}" {% if request.GET.category == category.id %}selected{% endif %}>{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+
+                <!-- 発言者の選択肢 -->
+                <select name="speaker" class="search-select">
+                    <option value="">発言者</option>
+                    {% for child in children %}
+                        <option value="{{ child.nickname }}" {% if request.GET.speaker == child.nickname %}selected{% endif %}>{{ child.nickname }}</option>
+                    {% endfor %}
+                </select>
+
+                <!-- 検索ボタン -->
+                <button type="submit" class="search-btn">検索</button>
+
+                <!-- ソート順の選択肢 -->
+                <select name="sort_order" class="search-select">
+                    <option value="newest" {% if request.GET.sort_order == 'newest' %}selected{% endif %}>新着順</option>
+                    <option value="alphabet" {% if request.GET.sort_order == 'alphabet' %}selected{% endif %}>五十音順</option>
+                    <option value="year" {% if request.GET.sort_order == 'year' %}selected{% endif %}>年代順</option>
+                </select>
+            </form>
+        </section>
+
+        <!-- 名言一覧 -->
+        <section class="quote-list">
+            <div class="quote-grid">
+                {% for quote in quotes %}
+                <div class="quote-card">
+                    <div class="quote-header">
+                        <span>{{ quote.child.nickname }} ({{ quote.created_at|date:"Y/m/d" }})</span>
+                        <a href="{% url 'quote_edit' quote.id %}" class="edit-link">編集</a>
+                    </div>
+                    <p>{{ quote.content }}</p>
+                    <div class="quote-footer">
+                        <img src="{{ quote.image_url }}" alt="quote image" class="quote-image">
+                        <span>コメント数: {{ quote.comment_set.count }}</span>
+                    </div>
                 </div>
-            </li>
-            {% empty %}
-            <li>名言が登録されていません。</li>
-            {% endfor %}
-        </ul>
-    </section>
+                {% empty %}
+                <div class="quote-card">
+                    <p>名言が登録されていません。</p>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </main>   
 
     <!-- モーダルの構造 -->
+    <div id="modalBackground" class="modal-background"></div>
     <div id="quoteModal" class="modal">
         <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
+            <span class="close" onclick="closeQuoteModal()">&times;</span>
             <h2>名言を登録</h2>
             <form method="post" action="{% url 'quote_add' %}" enctype="multipart/form-data">
                 {% csrf_token %}
@@ -125,7 +157,7 @@
     </div>
 
     <!-- 固定ボタンでモーダルを開く -->
-    <button class="add-quote-btn" onclick="openModal()">➕</button>
+    <button class="fixed-add-btn" onclick="openQuoteModal()">+</button>
 
     <script src="{% static 'js/modal.js' %}"></script>
 </body>

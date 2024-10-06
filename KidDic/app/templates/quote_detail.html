@@ -4,11 +4,11 @@
 <p>登録者: {{ quote.user.username }}</p>
 
 <!-- 画像のタップでモーダル表示 -->
-<img src="{{ quote.image_url }}" alt="名言の画像" id="quote-image" onclick="showModal()">
+<img src="{{ quote.image_url }}" alt="名言の画像" id="quote-image" onclick="showImageModal()">
 
 <!-- モーダルウィンドウの構造 -->
 <div id="myModal" class="modal">
-  <span class="close" onclick="closeModal()">&times;</span>
+  <span class="close" onclick="closeImageModal()">&times;</span>
   <img class="modal-content" id="modalImage">
   <div id="caption"></div>
 </div>

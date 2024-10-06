@@ -1,85 +1,345 @@
-/* モーダルの基本スタイル */
-.modal {
-    display: none;
+/* 画面下部中央に固定された追従プラスボタン */
+.fixed-add-btn {
     position: fixed;
-    z-index: 1;
+    bottom: 20px; /* 画面下部からの距離 */
+    left: 50%; /* 画面中央に配置 */
+    transform: translateX(-50%); /* ボタンを中央に寄せる */
+    background-color: #555; /* ボタンの背景色 */
+    color: white; /* ボタン内のテキストカラー */
+    border-radius: 50%; /* 円形にする */
+    width: 70px; /* ボタンの幅 */
+    height: 70px; /* ボタンの高さ */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 40px; /* プラスマークのサイズ */
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* 影をつける */
+    z-index: 1000; /* 常に他の要素の上に表示されるように */
+    transition: background-color 0.3s ease; /* ホバー時の色変化をスムーズに */
+}
+
+.fixed-add-btn:hover {
+    background-color: #333; /* ホバー時に背景色を変更 */
+}
+
+/* モーダルのスタイル */
+.modal {
+    display: none; /* 初期状態では非表示 */
+    position: fixed;
+    z-index: 1001; /* プラスボタンより前面 */
+    left: 50%; /* 左右中央に配置 */
+    top: 50%; /* 上下中央に配置 */
+    transform: translate(-50%, -50%); /* 完全に中央に寄せるための変換 */
+    width: 100%; /* モバイル端末でもフルサイズになるように */
+    max-width: 500px; /* 最大幅を設定 */
+    background-color: rgba(255, 255, 255, 1); /* 背景は白 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* 影をつける */
+    border-radius: 10px; /* 角を丸くする */
+    padding: 20px; /* モーダル内部の余白 */
+}
+
+/* モーダルの背景 */
+/* .modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 500px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+} */
+.modal-background {
+    display: none; /* 初期状態では非表示 */
+    position: fixed;
+    z-index: 1000;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.5); /* 半透明の黒背景 */
 }
 
-.modal-content {
-    background-color: #fff;
-    margin: 10% auto;
-    padding: 20px;
-    width: 80%;
-    max-width: 500px;
-    border-radius: 10px;
-}
-
-.modal-content h2 {
-    text-align: center;
-}
-
-.modal .close {
+/* 閉じるボタン */
+.close {
     position: absolute;
     top: 10px;
     right: 20px;
-    font-size: 30px;
+    color: black;
+    font-size: 28px;
+    font-weight: bold;
     cursor: pointer;
 }
 
-.modal .close:hover {
-    color: #000;
+.close:hover {
+    color: red;
 }
 
-/* フォームのスタイル */
-form {
+/* モーダルのテキスト調整 */
+.modal-content h2 {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+
+
+/* 名言リストをカード形式にする */
+.quote-list {
     display: flex;
-    flex-direction: column;
+    justify-content: center;
+    padding: 20px;
 }
 
-form label {
-    margin: 10px 0 5px;
+.quote-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
 }
 
-form input, form select, form textarea {
-    padding: 8px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+.quote-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 15px;
 }
 
-form button {
+.quote-header {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+}
+
+.quote-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.quote-image {
+    max-width: 50px;
+    border-radius: 8px;
+}
+
+.edit-link {
+    color: blue;
+    text-decoration: none;
+}
+
+.edit-link:hover {
+    text-decoration: underline;
+} */
+
+/* 検索フォームの横並び設定 */
+.search-section {
+    display: flex;
+    justify-content: center;
+    margin: 20px;
+}
+
+.search-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.search-input, .search-select, .search-btn {
     padding: 10px;
-    background-color: #007bff;
-    color: white;
-    border: none;
+    font-size: 16px;
+}
+
+/* 検索フォームの横並び設定 */
+.search-section {
+    display: flex;
+    justify-content: center;
+    margin: 20px;
+    padding-top: 70px; /* 検索フォームの上に余白を追加 */
+}
+
+.search-form {
+    display: flex;
+    gap: 10px; /* 各要素の間隔 */
+    align-items: center;
+}
+
+/* 検索フォームの入力スタイル */
+.search-input {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 150px;
+}
+
+/* プルダウンメニューのスタイル */
+.search-select {
+    padding: 8px 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100px;
+}
+
+/* 検索ボタンのスタイル */
+.search-btn {
+    padding: 8px 15px;
+    font-size: 14px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
     border-radius: 5px;
     cursor: pointer;
 }
 
-form button:hover {
-    background-color: #0056b3;
+.search-btn:hover {
+    background-color: #e0e0e0;
 }
 
-.add-quote-btn {
+/* ハンバーガーメニューのCSS */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    padding-top: 50; /* ヘッダーの高さ+余白 */
+  }
+  
+  /* Navbar & Navmenu color */
+  :root {
+    --background-navbar: rgba(55, 55, 55, 0.98);
+  }
+  
+  .header {
+    background: var(--background-navbar);
     position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    font-size: 30px;
+    width: 100%;
+    height: 52px;
+  }
+  
+  /* Nav items */
+  .menu {
+    list-style: none;
+    position: absolute;
+    width: 100%;
+    height: auto;
+    top: 0;
+    margin-top: 52px;
+    padding: 0 0 10px 0;
+    clear: both;
+    background: var(--background-navbar);
+    transition: 0.3192s cubic-bezier(0.04, 0.04, 0.12, 0.96) 0.1008s;
+    transform: scale(1, 0);
+    transform-origin: top;
+  }
+  
+  /* Hamburger menu button */
+  .menu-btn:checked ~ .menu {
+    transform: scale(1, 1);
+    transform-origin: top;
+    transition: 0.3192s cubic-bezier(0.04, 0.04, 0.12, 0.96) 0.1008s;
+  }
+  
+  /* Hamburger menbu text */
+  .menu a {
+    text-decoration: none;
+    font-weight: 500;
+    letter-spacing: 2px;
+    font-size: 16px;
+    text-transform: capitalize;
+    color: #ddd;
+    opacity: 0;
+    transition: 0.5s;
+  }
+  
+  .menu li {
+    border-top: 1px solid rgb(75, 75, 75);
+    padding: 15px 0;
+    margin: 0 54px;
+    opacity: 0;
+    transition: 0.5s;
+  }
+  
+  .menu-btn:checked ~ .menu a,
+  .menu-btn:checked ~ .menu li {
+    opacity: 1;
+    transition: 0.3192s cubic-bezier(0.04, 0.04, 0.12, 0.96) 0.2s;
+  }
+  
+  .menu-btn {
+    display: none;
+  }
+  
+  .menu-icon {
+    display: inline-block;
+    position: relative;
     cursor: pointer;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-}
-
-.add-quote-btn:hover {
-    background-color: #0056b3;
-}
+    padding: 24px 14px;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  }
+  
+  .navicon {
+    background: #ddd;
+    display: block;
+    height: 3px;
+    width: 26px;
+    position: relative;
+    transition: 0.3192s cubic-bezier(0.04, 0.04, 0.12, 0.96) 0.1008s;
+  }
+  
+  .navicon:before,
+  .navicon:after {
+    content: "";
+    display: block;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    background: #ddd;
+    transition: 0.3192s cubic-bezier(0.04, 0.04, 0.12, 0.96) 0.1008s;
+  }
+  
+  .navicon:before {
+    top: 9px;
+  }
+  
+  .navicon:after {
+    bottom: 9px;
+  }
+  
+  /* Hamburger Menu Animation Start */
+  .menu-btn:checked ~ .menu-icon .navicon:before {
+    transform: rotate(-45deg);
+  }
+  
+  .menu-btn:checked ~ .menu-icon .navicon:after {
+    transform: rotate(45deg);
+  }
+  
+  .menu-btn:checked ~ .menu-icon:not(.steps) .navicon:before {
+    top: 0;
+  }
+  .menu-btn:checked ~ .menu-icon:not(.steps) .navicon:after {
+    bottom: 0;
+  }
+  
+  .menu-btn:checked ~ .menu-icon .navicon {
+    background: rgba(0, 0, 0, 0);
+    transition: 0.2192s cubic-bezier(0.04, 0.04, 0.12, 0.96) 0.1008s;
+  }
+  /* Hamburger Menu Animation End */
+  
+  /* Navbar Container */
+  .navtext-container {
+    width: 100%;
+    height: 52px;
+    position: absolute;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* Navbar Text */
+  .navtext {
+    position: absolute;
+    text-transform: none;
+    color: #ddd;
+    letter-spacing: 4px;
+    font-size: 35px;
+  }
