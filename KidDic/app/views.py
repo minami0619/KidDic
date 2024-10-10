@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from app.models import Child, Quote, Comment, Category, Family
 from django.utils.timezone import now
 from django.db import IntegrityError
+from datetime import datetime
 
 # Create your views here.
 
@@ -164,34 +165,133 @@ class QuoteCreateView(LoginRequiredMixin, View):
     def get(self, request):
         form = QuoteForm()
 
-        # 家族に関連する子どもを取得
+        # 子どもリストを取得
         children = Child.objects.filter(family=request.user.family)
 
-        # デバッグ: 取得した子どもリストを確認
-        print(children)  # 子どもが正しく取得されているか確認
-        for child in children:
-            print(child.nickname)  # 子どものニックネームを表示
+        # 現在の日付を取得
+        current_year = datetime.now().year
+        current_month = datetime.now().month
+        current_day = datetime.now().day
 
-        return render(request, "quote_form.html", context={"form": form, "children": children})
+        # 年、月、日の範囲を生成（例えば過去10年から未来10年まで）
+        year_range = range(current_year - 10, current_year + 11)
+        month_range = range(1, 13)
+        day_range = range(1, 32)
+
+        return render(request, "quote_form.html", {
+            "form": form,
+            "children": children,
+            "year_range": year_range,
+            "month_range": month_range,
+            "day_range": day_range,
+            "current_year": current_year,
+            "current_month": current_month,
+            "current_day": current_day
+        })
 
     def post(self, request):
         form = QuoteForm(request.POST)
-
         if form.is_valid():
-            # 子どもを取得
-            child_id = request.POST.get('child')  # POSTリクエストから child のIDを取得
+            child_id = request.POST.get('child')
             child = Child.objects.get(id=child_id)
-
+            
             # フォームから取得したデータに子どもを追加して保存
             quote = form.save(commit=False)
             quote.child = child
-            quote.save()
 
+            # 日付処理: 任意登録対応
+            start_year = request.POST.get('start-year')
+            start_month = request.POST.get('start-month')
+            start_day = request.POST.get('start-day')
+
+            # 日付フィールドが設定されているかを確認しながら設定
+            if start_year and start_year.isdigit():
+                if start_month and start_month.isdigit():
+                    if start_day and start_day.isdigit():
+                        # 完全な日付が入力された場合
+                        quote.start_date = datetime(
+                            int(start_year), int(start_month), int(start_day)
+                        )
+                    else:
+                        # 年と月のみ
+                        quote.start_date = datetime(
+                            int(start_year), int(start_month), 1
+                        )
+                else:
+                    # 年のみ
+                    quote.start_date = datetime(
+                        int(start_year), 1, 1
+                    )
+            else:
+                # 何も入力されていない場合、デフォルトで今日の日付を設定
+                quote.start_date = datetime.now()
+
+            # 保存処理
+            quote.save()
             return redirect("home")
 
         # エラー時は再度子どもリストを取得して再描画
         children = Child.objects.filter(family=request.user.family)
         return render(request, "quote_form.html", context={"form": form, "children": children})
+
+
+
+# class QuoteCreateView(LoginRequiredMixin, View):
+#     def get(self, request):
+#         # デフォルトの日付（今日の日付）を初期値に設定
+#         today = timezone.now()
+#         form = QuoteForm(initial={
+#             'start_year': today.year,
+#             'start_month': today.month,
+#             'start_day': today.day,
+#         })
+
+#         # 家族に関連する子どもを取得
+#         children = Child.objects.filter(family=request.user.family)
+
+#         return render(request, "quote_form.html", context={"form": form, "children": children})
+
+#     def post(self, request):
+#         form = QuoteForm(request.POST)
+
+#         if form.is_valid():
+#             # 子どもを取得
+#             child_id = request.POST.get('child')  # POSTリクエストから child のIDを取得
+#             child = Child.objects.get(id=child_id)
+
+#             # フォームから取得したデータに子どもを追加して保存
+#             quote = form.save(commit=False)
+#             quote.child = child
+
+#             # 日付の処理
+#             start_year = form.cleaned_data.get('start_year')
+#             start_month = form.cleaned_data.get('start_month')
+#             start_day = form.cleaned_data.get('start_day')
+
+#             if start_year and start_month and start_day:
+#                 quote.start_date = f"{start_year}-{start_month:02}-{start_day:02}"
+#             else:
+#                 # 部分的な入力にも対応（年のみや年+月）
+#                 quote.start_date = None  # またはデフォルト値
+
+#             # 終了日も同様に処理
+#             end_year = form.cleaned_data.get('end_year')
+#             end_month = form.cleaned_data.get('end_month')
+#             end_day = form.cleaned_data.get('end_day')
+
+#             if end_year and end_month and end_day:
+#                 quote.end_date = f"{end_year}-{end_month:02}-{end_day:02}"
+#             else:
+#                 quote.end_date = None  # または必要に応じてデフォルト値
+
+#             quote.save()
+
+#             return redirect("home")
+
+#         # エラー時は再度子どもリストを取得して再描画
+#         children = Child.objects.filter(family=request.user.family)
+#         return render(request, "quote_form.html", context={"form": form, "children": children})
+
 
 class QuoteListView(LoginRequiredMixin, View):
     def get(self, request):

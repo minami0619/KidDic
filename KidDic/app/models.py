@@ -41,8 +41,34 @@ class Quote(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    # 年、月、日を個別に保存
+    start_year = models.IntegerField(null=True, blank=True)  # 任意の開始年
+    start_month = models.IntegerField(null=True, blank=True)  # 任意の開始月
+    start_day = models.IntegerField(null=True, blank=True)  # 任意の開始日
+
+    end_year = models.IntegerField(null=True, blank=True)  # 任意の終了年
+    end_month = models.IntegerField(null=True, blank=True)  # 任意の終了月
+    end_day = models.IntegerField(null=True, blank=True)  # 任意の終了日
+
+    image = models.ImageField(upload_to='quotes_images/', null=True, blank=True)  # 画像のフィールド
+    category = models.CharField(max_length=100, blank=True)  # カテゴリのフィールド
+
     def __str__(self):
         return self.content
+    
+    def get_start_date(self):
+        """年、月、日を組み合わせて開始日を取得"""
+        if self.start_year:
+            return f"{self.start_year}年{self.start_month or ''}月{self.start_day or ''}日"
+        return "不明"
+
+    def get_end_date(self):
+        """年、月、日を組み合わせて終了日を取得"""
+        if self.end_year:
+            return f"{self.end_year}年{self.end_month or ''}月{self.end_day or ''}日"
+        return "不明"
+    
+
 
 class Comment(models.Model):
     quote = models.ForeignKey(Quote, on_delete=models.CASCADE)

@@ -111,30 +111,71 @@
             <h2>名言を登録</h2>
             <form method="post" action="{% url 'quote_add' %}" enctype="multipart/form-data">
                 {% csrf_token %}
-            
-                <!-- デバッグ用: childrenの内容を表示 -->
-                <ul>
-                    {% for child in children %}
-                        <li>{{ child.nickname }}</li>  <!-- デバッグ：ニックネームを表示 -->
-                    {% endfor %}
-                </ul>
-
+                            
                 <!-- 子どもを選択するプルダウンメニュー -->
-                <label for="child">子どもを選択:</label>
-                <select name="child" id="child" required>
-                    {% for child in children %}
-                        <option value="{{ child.id }}">{{ child.nickname }}</option>
-                    {% endfor %}
-                 </select>
-
+                <div class="child-selection-container">
+                    <select name="child" id="child" required>
+                        {% for child in children %}
+                            <option value="{{ child.id }}">{{ child.nickname }}</option>
+                        {% endfor %}
+                    </select>
+                    <span>の名言を登録する</span>
+                </div>
+                
                 <!-- 名言 -->
                 <label for="content">名言 <span style="color:red;">※必須</span></label>
                 <input type="text" name="content" id="content" required>
 
                 <!-- 日付 -->
-                <label for="date">日付</label>
-                <input type="date" name="date" id="date" value="{{ today_date }}">
-
+                <div class="date-range">
+                    <label for="start-year">日付:</label>
+                    <div class="date-inputs">
+                        <select name="start-year" id="start-year" class="date-select">
+                            <option value="">--</option>
+                            {% for year in year_range %}
+                                <option value="{{ year }}" {% if year == current_year %}selected{% endif %}>{{ year }}</option>
+                            {% endfor %}
+                        </select>年
+                
+                        <select name="start-month" id="start-month" class="date-select">
+                            <option value="">--</option>
+                            {% for month in month_range %}
+                                <option value="{{ month }}" {% if month == current_month %}selected{% endif %}>{{ month }}</option>
+                            {% endfor %}
+                        </select>月
+                
+                        <select name="start-day" id="start-day" class="date-select">
+                            <option value="">--</option>
+                            {% for day in day_range %}
+                                <option value="{{ day }}" {% if day == current_day %}selected{% endif %}>{{ day }}</option>
+                            {% endfor %}
+                        </select>日
+                    </div>
+                    
+                    <div class="date-range-end">
+                        <span>（～</span>
+                        <select name="end-year" id="end-year" class="date-select">
+                            <option value="">--</option>
+                            {% for year in year_range %}
+                                <option value="{{ year }}">{{ year }}</option>
+                            {% endfor %}
+                        </select>年
+                        <select name="end-month" id="end-month" class="date-select">
+                            <option value="">--</option>
+                            {% for month in month_range %}
+                                <option value="{{ month }}">{{ month }}</option>
+                            {% endfor %}
+                        </select>月
+                        <select name="end-day" id="end-day" class="date-select">
+                            <option value="">--</option>
+                            {% for day in day_range %}
+                                <option value="{{ day }}">{{ day }}</option>
+                            {% endfor %}
+                        </select>日
+                        <span>まで）</span>
+                    </div>
+                </div>                               
+                  
                 <!-- テキストエリア (任意の追加情報) -->
                 <label for="description">説明</label>
                 <textarea name="description" id="description"></textarea>

@@ -23,64 +23,185 @@
     background-color: #333; /* ホバー時に背景色を変更 */
 }
 
+
 /* モーダルのスタイル */
 .modal {
-    display: none; /* 初期状態では非表示 */
-    position: fixed;
-    z-index: 1001; /* プラスボタンより前面 */
-    left: 50%; /* 左右中央に配置 */
-    top: 50%; /* 上下中央に配置 */
-    transform: translate(-50%, -50%); /* 完全に中央に寄せるための変換 */
-    width: 100%; /* モバイル端末でもフルサイズになるように */
-    max-width: 500px; /* 最大幅を設定 */
-    background-color: rgba(255, 255, 255, 1); /* 背景は白 */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* 影をつける */
-    border-radius: 10px; /* 角を丸くする */
-    padding: 20px; /* モーダル内部の余白 */
+  display: flex;
+  flex-direction: column; /* 要素を縦に並べる */
+  justify-content: center; /* 縦方向中央 */
+  align-items: center; /* 横方向中央 */
+  position: fixed;
+  z-index: 1001;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  max-width: 450px; /* 最大幅を少し小さく調整 */
+  max-height: 90vh; /* 縦の最大高さを指定して制限 */
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  padding: 15px 20px; /* 上下左右のパディングを少し小さく */
+  overflow-y: auto; /* コンテンツがあふれた場合にスクロールできるように */
 }
 
 /* モーダルの背景 */
-/* .modal-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    width: 80%;
-    max-width: 500px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-} */
 .modal-background {
-    display: none; /* 初期状態では非表示 */
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* 半透明の黒背景 */
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* 半透明の黒背景 */
 }
 
 /* 閉じるボタン */
 .close {
-    position: absolute;
-    top: 10px;
-    right: 20px;
-    color: black;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  color: black;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
 .close:hover {
-    color: red;
+  color: red;
 }
 
 /* モーダルのテキスト調整 */
 .modal-content h2 {
-    text-align: center;
-    font-size: 24px;
-    margin-bottom: 20px;
+  text-align: center;
+  font-size: 22px;
+  margin-bottom: 15px; /* 見出しと入力エリアの間隔を調整 */
 }
 
+/* フォーム要素のスタイル */
+.modal-content label {
+  display: block;
+  margin-top: 4px; /* ラベルと入力エリアの間隔を縮める */
+  font-weight: bold;
+}
+
+.modal-content input,
+.modal-content select,
+.modal-content textarea {
+  width: 100%; /* 幅を100%に */
+  padding: 6px; /* パディングを少し小さく */
+  margin-top: 4px; /* 上の余白を少し小さく */
+  margin-bottom: 8px; /* 下の余白を調整して均等に */
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.modal-content textarea {
+  height: 80px; /* テキストエリアの高さを少し小さく */
+}
+
+/* 画像選択ボタンのスタイル */
+.modal-content input[type="file"] {
+  margin-top: 10px;
+}
+
+/* 登録ボタンのスタイル */
+.modal-content button {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #555;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 16px; /* ボタン内のテキストを少し小さく */
+}
+
+.modal-content button:hover {
+  background-color: #333;
+}
+
+/* 子ども選択部分のスタイル */
+label {
+  display: flex;
+  align-items: center;
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+label select {
+  font-size: 18px;
+  margin-right: 10px;
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: auto;
+  appearance: flex;
+}
+
+label span {
+  font-size: 18px;
+  color: #555;
+}
+
+/* 子どもの選択エリアと「の名言を登録する」を横並びにする */
+.child-selection-container {
+  display: flex;
+  align-items: center; /* 垂直方向の中央に配置 */
+  margin-bottom: 10px; /* 下の余白を少し小さく */
+}
+
+.child-selection-container select {
+  font-size: 16px;
+  margin-right: 10px; /* 選択メニューとテキストの間隔を調整 */
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.child-selection-container span {
+  font-size: 16px;
+  color: #555;
+}
+
+
+/* 日付選択エリアのスタイル */
+.date-range {
+  display: flex;
+  align-items: center;
+  flex-direction: column; /* フレックスボックスの方向を縦に変更 */
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+
+.date-inputs {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.date-range-end {
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+  gap: 10px;
+}
+
+.date-range select {
+  width: 80px; 
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.date-range span {
+  margin-left: 5px;
+  margin-right: 5px;
+}
 
 
 /* 名言リストをカード形式にする */
