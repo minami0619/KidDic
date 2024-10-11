@@ -43,11 +43,11 @@
             <form method="get" action="{% url 'home' %}" class="search-form">
                 <input type="text" name="keyword" placeholder="キーワード" value="{{ request.GET.keyword }}" class="search-input">
 
-                <!-- 月の選択肢 -->
-                <select name="month" class="search-select">
-                    <option value="">月</option>
-                    {% for month in months %}
-                        <option value="{{ month }}" {% if request.GET.month == month %}selected{% endif %}>{{ month }}月</option>
+                <!-- 年の選択肢 -->
+                <select name="year" class="search-select">
+                    <option value="">年</option>
+                    {% for year in year_range %}
+                        <option value="{{ year }}" {% if request.GET.year == year %}selected{% endif %}>{{ year }}</option>
                     {% endfor %}
                 </select>
 
@@ -83,17 +83,19 @@
         <section class="quote-list">
             <div class="quote-grid">
                 {% for quote in quotes %}
-                <div class="quote-card">
-                    <div class="quote-header">
-                        <span>{{ quote.child.nickname }} ({{ quote.created_at|date:"Y/m/d" }})</span>
-                        <a href="{% url 'quote_edit' quote.id %}" class="edit-link">編集</a>
+                <a href="{% url 'quote_detail' quote.id %}" class="quote-card-link">
+                    <div class="quote-card">
+                        <div class="quote-header">
+                            <span>{{ quote.child.nickname }}{{ quote.child.age }}({{ quote.created_at|date:"Y/m/d" }})</span>
+                            <a href="{% url 'quote_edit' quote.id %}" class="edit-link" onclick="event.stopPropagation();">編集</a>
+                        </div>
+                        <p>{{ quote.content }}</p>
+                        <div class="quote-footer">
+                            <img src="{{ quote.image_url }}" alt="quote image" class="quote-image">
+                            <span>コメント数: {{ quote.comment_set.count }}</span>
+                        </div>
                     </div>
-                    <p>{{ quote.content }}</p>
-                    <div class="quote-footer">
-                        <img src="{{ quote.image_url }}" alt="quote image" class="quote-image">
-                        <span>コメント数: {{ quote.comment_set.count }}</span>
-                    </div>
-                </div>
+                </a>
                 {% empty %}
                 <div class="quote-card">
                     <p>名言が登録されていません。</p>
@@ -101,6 +103,7 @@
                 {% endfor %}
             </div>
         </section>
+
     </main>   
 
     <!-- モーダルの構造 -->
@@ -108,94 +111,88 @@
     <div id="quoteModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeQuoteModal()">&times;</span>
-            <h2>名言を登録</h2>
+            <h2>{{ child.nickname }}の名言を登録する</h2>
+            
             <form method="post" action="{% url 'quote_add' %}" enctype="multipart/form-data">
                 {% csrf_token %}
-                            
-                <!-- 子どもを選択するプルダウンメニュー -->
-                <div class="child-selection-container">
-                    <select name="child" id="child" required>
-                        {% for child in children %}
-                            <option value="{{ child.id }}">{{ child.nickname }}</option>
-                        {% endfor %}
-                    </select>
-                    <span>の名言を登録する</span>
-                </div>
-                
+
+                <!-- 子ども選択 -->
+                <label for="child">子ども</label>
+                <select name="child" id="child" required>
+                    {% for child in children %}
+                        <option value="{{ child.id }}">{{ child.nickname }}</option>
+                    {% endfor %}
+                </select>
+            
                 <!-- 名言 -->
                 <label for="content">名言 <span style="color:red;">※必須</span></label>
                 <input type="text" name="content" id="content" required>
-
+ 
                 <!-- 日付 -->
                 <div class="date-range">
-                    <label for="start-year">日付:</label>
+                    <label for="start_date">日付</label>
                     <div class="date-inputs">
-                        <select name="start-year" id="start-year" class="date-select">
-                            <option value="">--</option>
+                        <select name="start-year" id="start-year">
                             {% for year in year_range %}
                                 <option value="{{ year }}" {% if year == current_year %}selected{% endif %}>{{ year }}</option>
                             {% endfor %}
                         </select>年
-                
-                        <select name="start-month" id="start-month" class="date-select">
-                            <option value="">--</option>
+                        <select name="start-month" id="start-month">
                             {% for month in month_range %}
                                 <option value="{{ month }}" {% if month == current_month %}selected{% endif %}>{{ month }}</option>
                             {% endfor %}
                         </select>月
-                
-                        <select name="start-day" id="start-day" class="date-select">
-                            <option value="">--</option>
+                        <select name="start-day" id="start-day">
                             {% for day in day_range %}
                                 <option value="{{ day }}" {% if day == current_day %}selected{% endif %}>{{ day }}</option>
                             {% endfor %}
                         </select>日
                     </div>
-                    
                     <div class="date-range-end">
                         <span>（～</span>
-                        <select name="end-year" id="end-year" class="date-select">
-                            <option value="">--</option>
+                        <select name="end-year" id="end-year">
                             {% for year in year_range %}
                                 <option value="{{ year }}">{{ year }}</option>
                             {% endfor %}
                         </select>年
-                        <select name="end-month" id="end-month" class="date-select">
-                            <option value="">--</option>
+                        <select name="end-month" id="end-month">
                             {% for month in month_range %}
                                 <option value="{{ month }}">{{ month }}</option>
                             {% endfor %}
                         </select>月
-                        <select name="end-day" id="end-day" class="date-select">
-                            <option value="">--</option>
+                        <select name="end-day" id="end-day">
                             {% for day in day_range %}
                                 <option value="{{ day }}">{{ day }}</option>
                             {% endfor %}
                         </select>日
                         <span>まで）</span>
                     </div>
-                </div>                               
-                  
-                <!-- テキストエリア (任意の追加情報) -->
+                </div>
+
+     
+              
+                <!-- 説明 -->
                 <label for="description">説明</label>
                 <textarea name="description" id="description"></textarea>
 
-                <!-- カテゴリ選択 -->
+                <!-- カテゴリ -->
                 <label for="category">カテゴリ</label>
                 <select name="category" id="category">
                     {% for category in categories %}
-                    <option value="{{ category.id }}">{{ category.name }}</option>
+                        <option value="{{ category.id }}">{{ category.name }}</option>
                     {% endfor %}
                 </select>
 
-                <!-- 画像のアップロード -->
+                <!-- 画像選択 -->
                 <label for="image">写真</label>
                 <input type="file" name="image" id="image">
-
+                 
+                <!-- 登録ボタン -->
                 <button type="submit">登録</button>
-            </form>
+            </form>                         
         </div>
     </div>
+            
 
     <!-- 固定ボタンでモーダルを開く -->
     <button class="fixed-add-btn" onclick="openQuoteModal()">+</button>

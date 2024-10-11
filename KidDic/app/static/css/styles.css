@@ -24,9 +24,10 @@
 }
 
 
+
 /* モーダルのスタイル */
 .modal {
-  display: flex;
+  display: none;
   flex-direction: column; /* 要素を縦に並べる */
   justify-content: center; /* 縦方向中央 */
   align-items: center; /* 横方向中央 */
@@ -89,14 +90,35 @@
 .modal-content input,
 .modal-content select,
 .modal-content textarea {
-  width: 100%; /* 幅を100%に */
-  padding: 6px; /* パディングを少し小さく */
-  margin-top: 4px; /* 上の余白を少し小さく */
-  margin-bottom: 8px; /* 下の余白を調整して均等に */
+  display: block;
+  width: 100%;
+  margin-top: 5px;
+  margin-bottom: 15px;
+  padding: 10px;
+  font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 5px;
   box-sizing: border-box;
 }
+
+.date-range {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.date-inputs, .date-range-end {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.date-range select {
+  width: 80px; /* 適切な幅を設定 */
+  padding: 5px;
+  border-radius: 5px;
+}
+
 
 .modal-content textarea {
   height: 80px; /* テキストエリアの高さを少し小さく */
@@ -124,84 +146,8 @@
   background-color: #333;
 }
 
-/* 子ども選択部分のスタイル */
-label {
-  display: flex;
-  align-items: center;
-  font-size: 18px;
-  margin-bottom: 20px;
-}
-
-label select {
-  font-size: 18px;
-  margin-right: 10px;
-  padding: 5px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  width: auto;
-  appearance: flex;
-}
-
-label span {
-  font-size: 18px;
-  color: #555;
-}
-
-/* 子どもの選択エリアと「の名言を登録する」を横並びにする */
-.child-selection-container {
-  display: flex;
-  align-items: center; /* 垂直方向の中央に配置 */
-  margin-bottom: 10px; /* 下の余白を少し小さく */
-}
-
-.child-selection-container select {
-  font-size: 16px;
-  margin-right: 10px; /* 選択メニューとテキストの間隔を調整 */
-  padding: 5px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-
-.child-selection-container span {
-  font-size: 16px;
-  color: #555;
-}
 
 
-/* 日付選択エリアのスタイル */
-.date-range {
-  display: flex;
-  align-items: center;
-  flex-direction: column; /* フレックスボックスの方向を縦に変更 */
-  font-size: 16px;
-  margin-bottom: 15px;
-}
-
-.date-inputs {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.date-range-end {
-  display: flex;
-  align-items: center;
-  margin-left: 10px;
-  gap: 10px;
-}
-
-.date-range select {
-  width: 80px; 
-  padding: 5px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 14px;
-}
-
-.date-range span {
-  margin-left: 5px;
-  margin-right: 5px;
-}
 
 
 /* 名言リストをカード形式にする */
@@ -217,11 +163,24 @@ label span {
     gap: 20px;
 }
 
+.quote-card-link {
+  text-decoration: none;
+  color: inherit;
+}
+
 .quote-card {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 15px;
+  display: block;
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
+  width: 100%;  /* カードの幅を広げる */
+  max-width: 700px;  /* 必要に応じて最大幅を設定 */
+}
+
+.quote-card:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
 }
 
 .quote-header {
@@ -245,6 +204,7 @@ label span {
 .edit-link {
     color: blue;
     text-decoration: none;
+    margin-left: 10px;
 }
 
 .edit-link:hover {
@@ -253,20 +213,20 @@ label span {
 
 /* 検索フォームの横並び設定 */
 .search-section {
-    display: flex;
-    justify-content: center;
-    margin: 20px;
+  display: flex;
+  justify-content: center;
+  margin: 20px;
 }
 
 .search-form {
-    display: flex;
-    gap: 10px;
-    align-items: center;
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
 
 .search-input, .search-select, .search-btn {
-    padding: 10px;
-    font-size: 16px;
+  padding: 10px;
+  font-size: 16px;
 }
 
 /* 検索フォームの横並び設定 */

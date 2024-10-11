@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from app.models import User, Child, Quote, Comment
 from django.contrib.auth import authenticate
 from django.utils.timezone import now
+from django.forms.widgets import SelectDateWidget
 
 class SignupForm(UserCreationForm):
     class Meta:
@@ -57,42 +58,15 @@ class ChildForm(forms.ModelForm):
         model = Child
         fields = ['nickname', 'birthdate']
 
-class QuoteForm(forms.ModelForm):
-    start_year = forms.IntegerField(
-        required=False, 
-        min_value=1900, 
-        max_value=2100, 
-        initial=now().year  # デフォルトで今年の年を設定
-    )
-    start_month = forms.IntegerField(
-        required=False, 
-        min_value=1, 
-        max_value=12, 
-        initial=now().month  # デフォルトで今月を設定
-    )
-    start_day = forms.IntegerField(
-        required=False, 
-        min_value=1, 
-        max_value=31, 
-        initial=now().day  # デフォルトで今日の日を設定
-    )
 
-    end_year = forms.IntegerField(required=False, min_value=1900, max_value=2100)
-    end_month = forms.IntegerField(required=False, min_value=1, max_value=12)
-    end_day = forms.IntegerField(required=False, min_value=1, max_value=31)
+class QuoteForm(forms.ModelForm):
+    start_date = forms.DateField(widget=forms.SelectDateWidget(years=range(1900, 2100)), required=False)
+    end_date = forms.DateField(widget=forms.SelectDateWidget(years=range(1900, 2100)), required=False)
 
     class Meta:
         model = Quote
-        fields = [
-            'child', 
-            'content', 
-            'description', 
-            'public', 
-            'category', 
-            'start_year', 'start_month', 'start_day', 
-            'end_year', 'end_month', 'end_day', 
-            'image'
-        ]
+        fields = ['child', 'content', 'description', 'category', 'start_date', 'end_date', 'image']
+
 
 
 # class QuoteForm(forms.ModelForm):

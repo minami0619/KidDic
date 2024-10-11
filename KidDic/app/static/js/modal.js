@@ -49,6 +49,7 @@ function closeImageModal() {
     modal.style.display = "none";  // モーダルを非表示にする
 }
 
+// プラスボタンが押された時だけモーダルを開く
 document.querySelector(".fixed-add-btn").addEventListener("click", openQuoteModal);
 
 // モーダルを開く関数
@@ -56,7 +57,7 @@ function openQuoteModal() {
     var modal = document.getElementById("quoteModal");
     var modalBackground = document.getElementById("modalBackground");
     modal.style.display = "block";
-    modalBackground.style.display = "block"; // 背景も表示
+    modalBackground.style.display = "block";
 }
 
 // モーダルを閉じる関数
@@ -64,7 +65,7 @@ function closeQuoteModal() {
     var modal = document.getElementById("quoteModal");
     var modalBackground = document.getElementById("modalBackground");
     modal.style.display = "none";
-    modalBackground.style.display = "none"; // 背景を非表示
+    modalBackground.style.display = "none";
 }
 
 // モーダル外をクリックして閉じる処理
@@ -73,36 +74,22 @@ window.onclick = function(event) {
     var modalBackground = document.getElementById("modalBackground");
     if (event.target == modalBackground) {
         modal.style.display = "none";
-        modalBackground.style.display = "none"; // 背景をクリックして閉じる
+        modalBackground.style.display = "none";
     }
 }
 
 
-// // 名言登録モーダルを開く関数
-// function openQuoteModal() {
-//     var modal = document.getElementById("quoteModal");
-//     if (modal) {
-//         modal.style.display = "block";
-//     } else {
-//         console.error("モーダルが見つかりません。IDが正しいか確認してください。");
-//     }
-// }
+// 編集ボタンのクリック時にイベント伝播を止める
+document.querySelectorAll('.edit-link').forEach(function(editLink) {
+    editLink.addEventListener('click', function(event) {
+        event.stopPropagation();  // イベント伝播を停止
+    });
+});
 
-// // 名言登録モーダルを閉じる関数
-// function closeQuoteModal() {
-//     var modal = document.getElementById("quoteModal");
-//     if (modal) {
-//         modal.style.display = "none"; // モーダルを非表示
-//         modalBackground.style.display = "none"; // 背景を非表示
-//     }
-// }
-
-// // モーダル外をクリックして閉じる処理
-// window.onclick = function(event) {
-//     var modal = document.getElementById("quoteModal");
-//     if (event.target == modal) {
-//         modal.style.display = "none"; 
-//         modalBackground.style.display = "none"; //  モーダル外をクリックすると閉じる
-//     }
-// }
-
+// 名言カードをクリックすると詳細ページに移動する
+document.querySelectorAll('.quote-card').forEach(function(card) {
+    card.addEventListener('click', function() {
+        var url = card.querySelector('.quote-card-link').href;
+        window.location.href = url;  // カード全体をリンクとして機能させる
+    });
+});
