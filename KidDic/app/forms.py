@@ -4,6 +4,7 @@ from app.models import User, Child, Quote, Comment
 from django.contrib.auth import authenticate
 from django.utils.timezone import now
 from django.forms.widgets import SelectDateWidget
+import datetime
 
 class SignupForm(UserCreationForm):
     class Meta:
@@ -58,29 +59,13 @@ class ChildForm(forms.ModelForm):
         model = Child
         fields = ['nickname', 'birthdate']
 
-
 class QuoteForm(forms.ModelForm):
-    start_date = forms.DateField(widget=forms.SelectDateWidget(years=range(1900, 2100)), required=False)
-    end_date = forms.DateField(widget=forms.SelectDateWidget(years=range(1900, 2100)), required=False)
+    start_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
+    end_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
 
     class Meta:
         model = Quote
-        fields = ['child', 'content', 'description', 'category', 'start_date', 'end_date', 'image']
-
-
-
-# class QuoteForm(forms.ModelForm):
-#     start_year = forms.IntegerField(required=False, min_value=1900, max_value=2100)  # 任意の年
-#     start_month = forms.IntegerField(required=False, min_value=1, max_value=12)  # 任意の月
-#     start_day = forms.IntegerField(required=False, min_value=1, max_value=31)  # 任意の日
-
-#     end_year = forms.IntegerField(required=False, min_value=1900, max_value=2100)
-#     end_month = forms.IntegerField(required=False, min_value=1, max_value=12)
-#     end_day = forms.IntegerField(required=False, min_value=1, max_value=31)
-
-#     class Meta:
-#         model = Quote
-#         fields = ['child', 'content', 'description', 'public', 'category', 'start_year', 'start_month', 'start_day', 'end_year', 'end_month', 'end_day', 'image']
+        fields = ['child', 'content', 'description', 'start_date', 'end_date', 'image']
 
 class CommentForm(forms.ModelForm):
     class Meta:

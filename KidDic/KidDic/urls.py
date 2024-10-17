@@ -17,7 +17,9 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path
-from app.views import PortfolioView, SignupView, LoginView, HomeView, AccountInfoView, ChildCreateView, QuoteCreateView, QuoteDetailView, QuoteToggleSNSView, CommentDeleteView, QuoteEditView
+from app.views import PortfolioView, SignupView, LoginView, HomeView, AccountInfoView, ChildCreateView, QuoteDetailView, QuoteToggleSNSView, CommentDeleteView, QuoteEditView
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -27,10 +29,9 @@ urlpatterns = [
     path('home/',HomeView.as_view(), name="home"),
     path('account-info/', AccountInfoView.as_view(), name='account_info'),
     path('children/add/', ChildCreateView.as_view(), name='child_add'),
-    path('quotes/add/', QuoteCreateView.as_view(), name='quote_add'),
     path('quotes/<int:pk>/', QuoteDetailView.as_view(), name='quote_detail'),
     path('quotes/<int:pk>/edit/', QuoteEditView.as_view(), name='quote_edit'),  # 名言編集画面のURLパターン
     path('quotes/<int:pk>/delete/', QuoteEditView.as_view(), name='quote_delete'),  # 名言削除用のURLパターン
     path('quotes/<int:pk>/toggle_sns/', QuoteToggleSNSView.as_view(), name='quote_toggle_sns'),
     path('comments/<int:pk>/delete/', CommentDeleteView.as_view(), name='comment_delete'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

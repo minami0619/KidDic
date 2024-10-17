@@ -197,8 +197,11 @@
 }
 
 .quote-image {
-    max-width: 50px;
-    border-radius: 8px;
+  max-width: 150px;  /* 画像の幅を画面サイズに合わせる */
+  max-height: 150px;  /* 画像の高さを300pxに制限 */
+  height: auto;  /* 画像の縦横比を保持 */
+  width: auto;  /* 幅も自動調整 */
+  border-radius: 8px;
 }
 
 .edit-link {
@@ -274,6 +277,89 @@
 .search-btn:hover {
     background-color: #e0e0e0;
 }
+
+
+/* 個別名言画面の画像モーダル */
+.modal-image {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  padding-top: 60px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.7);
+}
+
+.modal-content-image {
+  margin: auto;
+  display: block;
+  max-width: 80%;
+  max-height: 80%;
+}
+
+.close-image {
+  position: absolute;
+  top: 15px;
+  right: 35px;
+  color: white;
+  font-size: 40px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* 個別名言画面のCSS */
+
+.quote-container {
+  border: 2px solid #ddd;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  max-width: 800px;
+  margin: 20px auto;
+  padding-top: 70px; 
+}
+
+.quote-detail {
+  border: 2px solid #ddd;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+}
+
+.quote-header, .quote-content, .quote-image, .comment-form {
+  margin-bottom: 20px;
+}
+
+
+.quote-header, .quote-content, .quote-image, .comments, .comment-form {
+  margin-bottom: 20px;
+}
+
+.comments ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.comment-form {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid #ddd;
+  padding-top: 10px;
+}
+
+.comment-form input[type="text"], .comment-form button {
+  margin: 10px;
+}
+
+.comment-form button {
+  padding: 5px 10px;
+}
+
+
+
 
 /* ハンバーガーメニューのCSS */
 body {

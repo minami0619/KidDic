@@ -60,19 +60,19 @@ class HomeView(LoginRequiredMixin, View):
         quotes = Quote.objects.filter(child__family=family)
 
         # 子どもリストを取得
-        children = Child.objects.filter(family=family)  # 家族に関連する子どもを取得
+        children = Child.objects.filter(family=family)
 
         # フィルタリング
         keyword = request.GET.get('keyword')
-        month = request.GET.get('month')
+        year = request.GET.get('year')
         category = request.GET.get('category')
         speaker = request.GET.get('speaker')
         sort_order = request.GET.get('sort_order', 'newest')
 
         if keyword:
             quotes = quotes.filter(content__icontains=keyword)
-        if month:
-            quotes = quotes.filter(created_at__month=month)  # created_atに基づいてフィルタリング
+        if year:
+            quotes = quotes.filter(created_at__year=year)
         if category:
             quotes = quotes.filter(category__id=category)
         if speaker:
@@ -80,14 +80,46 @@ class HomeView(LoginRequiredMixin, View):
 
         # ソート
         if sort_order == 'newest':
-            quotes = quotes.order_by('-created_at')  # created_atでソート
+            quotes = quotes.order_by('-created_at')
         elif sort_order == 'alphabet':
             quotes = quotes.order_by('content')
         elif sort_order == 'year':
             quotes = quotes.order_by('created_at')
         
-        # 子どもリストと名言リストをテンプレートに渡す
-        return render(request, 'home.html', {'quotes': quotes, 'children': children})
+                # フォームの設定
+        form = QuoteForm()
+
+        # テンプレートへのデータ渡し
+        return render(request, 'home.html', {
+            'quotes': quotes,
+            'children': children,
+            'form': form,
+        })
+
+    def post(self, request):
+        form = QuoteForm(request.POST, request.FILES)
+        if form.is_valid():
+            print(form.cleaned_data)
+
+            quote = form.save(commit=False)
+            # child = form.cleaned_data.get('child')
+            # quote.child = child
+            quote.start_date = form.cleaned_data.get('start_date')
+            quote.end_date = form.cleaned_data.get('end_date')
+            quote.child = form.cleaned_data.get('child')
+            quote.description = form.cleaned_data.get('description')
+            quote.save()
+            return redirect('home')
+
+        # エラー時は再度レンダリング
+        family = request.user.family
+        children = Child.objects.filter(family=family)
+        quotes = Quote.objects.filter(child__family=family)
+        return render(request, "home.html", {
+            'form': form,
+            'children': children,
+            'quotes': quotes
+        })
 
 
 
@@ -164,164 +196,6 @@ class ChildCreateView(View):
         return redirect('home')
         
 
-class QuoteCreateView(LoginRequiredMixin, View):
-    def get(self, request):
-        form = QuoteForm()
-        children = Child.objects.filter(family=request.user.family)
-
-        # 現在の日付を取得
-        current_year = timezone.now().year
-        current_month = timezone.now().month
-        current_day = timezone.now().day
-
-        # 年、月、日の範囲を生成
-        year_range = range(current_year - 10, current_year + 11)
-        month_range = range(1, 13)
-        day_range = range(1, 32)
-
-        return render(request, "home.html", {
-            "form": form,
-            "children": children,
-            "year_range": year_range,
-            "month_range": month_range,
-            "day_range": day_range,
-            "current_year": current_year,
-            "current_month": current_month,
-            "current_day": current_day
-        })
-
-    def post(self, request):
-        form = QuoteForm(request.POST, request.FILES)
-        if form.is_valid():
-            quote = form.save(commit=False)
-            child = Child.objects.get(id=request.POST.get('child'))
-            quote.child = child
-
-            # 日付が入力されている場合のみ設定
-            if form.cleaned_data.get('start_date'):
-                quote.start_date = form.cleaned_data['start_date']
-            if form.cleaned_data.get('end_date'):
-                quote.end_date = form.cleaned_data['end_date']
-            else:
-                # 日付がない場合はデフォルトで今日の日付を設定
-                quote.start_date = timezone.now()
-
-            quote.save()
-            return redirect('home')
-
-        # エラー時は再度レンダリング
-        children = Child.objects.filter(family=request.user.family)
-        return render(request, "home.html", {
-            "form": form,
-            "children": children
-        })
-
-
-# class QuoteCreateView(LoginRequiredMixin, View):
-#     def get(self, request):
-#         form = QuoteForm()
-
-#         # 子どもリストを取得
-#         children = Child.objects.filter(family=request.user.family)
-
-#         return render(request, "quote_form.html", {
-#             "form": form,
-#             "children": children
-#         })
-
-#     def post(self, request):
-#         form = QuoteForm(request.POST)
-
-#         if form.is_valid():
-#             # Quote インスタンスを保存（ただしまだコミットしない）
-#             quote = form.save(commit=False)
-
-#             # 子どもを設定
-#             child_id = request.POST.get('child')
-#             if child_id:
-#                 try:
-#                     child = Child.objects.get(id=child_id)
-#                     quote.child = child
-#                 except Child.DoesNotExist:
-#                     form.add_error('child', '指定された子どもが見つかりません')
-#                     children = Child.objects.filter(family=request.user.family)
-#                     return render(request, "quote_form.html", context={"form": form, "children": children})
-
-#             # 日付が入力されていない場合、デフォルトで今日の日付を設定
-#             start_date = form.cleaned_data.get('start_date', None)
-#             if not start_date:
-#                 quote.start_date = datetime.now()
-
-#             # Quoteを保存
-#             quote.save()
-
-#             return redirect("home")
-
-#         # フォームが無効な場合、再度子どもリストを取得して再描画
-#         children = Child.objects.filter(family=request.user.family)
-#         return render(request, "quote_form.html", {
-#             "form": form,
-#             "children": children
-#         })
-
-
-# class QuoteCreateView(LoginRequiredMixin, View):
-#     def get(self, request):
-#         # デフォルトの日付（今日の日付）を初期値に設定
-#         today = timezone.now()
-#         form = QuoteForm(initial={
-#             'start_year': today.year,
-#             'start_month': today.month,
-#             'start_day': today.day,
-#         })
-
-#         # 家族に関連する子どもを取得
-#         children = Child.objects.filter(family=request.user.family)
-
-#         return render(request, "quote_form.html", context={"form": form, "children": children})
-
-#     def post(self, request):
-#         form = QuoteForm(request.POST)
-
-#         if form.is_valid():
-#             # 子どもを取得
-#             child_id = request.POST.get('child')  # POSTリクエストから child のIDを取得
-#             child = Child.objects.get(id=child_id)
-
-#             # フォームから取得したデータに子どもを追加して保存
-#             quote = form.save(commit=False)
-#             quote.child = child
-
-#             # 日付の処理
-#             start_year = form.cleaned_data.get('start_year')
-#             start_month = form.cleaned_data.get('start_month')
-#             start_day = form.cleaned_data.get('start_day')
-
-#             if start_year and start_month and start_day:
-#                 quote.start_date = f"{start_year}-{start_month:02}-{start_day:02}"
-#             else:
-#                 # 部分的な入力にも対応（年のみや年+月）
-#                 quote.start_date = None  # またはデフォルト値
-
-#             # 終了日も同様に処理
-#             end_year = form.cleaned_data.get('end_year')
-#             end_month = form.cleaned_data.get('end_month')
-#             end_day = form.cleaned_data.get('end_day')
-
-#             if end_year and end_month and end_day:
-#                 quote.end_date = f"{end_year}-{end_month:02}-{end_day:02}"
-#             else:
-#                 quote.end_date = None  # または必要に応じてデフォルト値
-
-#             quote.save()
-
-#             return redirect("home")
-
-#         # エラー時は再度子どもリストを取得して再描画
-#         children = Child.objects.filter(family=request.user.family)
-#         return render(request, "quote_form.html", context={"form": form, "children": children})
-
-
 class QuoteListView(LoginRequiredMixin, View):
     def get(self, request):
         quotes = Quote.objects.filter(child__family=request.user)
@@ -381,99 +255,3 @@ class QuoteEditView(View):
         quote.delete()
         return redirect('home')
     
-# class QuoteCreateView(View):
-#     def get(self, request):
-#         children = Child.objects.filter(family=request.user.family)  # 子供のリストを取得
-#         categories = Category.objects.all()  # カテゴリのリストを取得
-#         form = QuoteForm()
-#         return render(request, 'home.html', {'form': form, 'children': children, 'categories': categories, 'today_date': now().date()})
-
-#     def post(self, request):
-#         form = QuoteForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             quote = form.save(commit=False)
-#             quote.user = request.user
-#             quote.save()
-#             return redirect('home')  # 成功時はホームにリダイレクト
-#         children = Child.objects.filter(family=request.user.family)
-#         categories = Category.objects.all()
-#         return render(request, 'home.html', {'form': form, 'children': children, 'categories': categories, 'today_date': now().date()})
-
-
-
-# class AccountInfoView(LoginRequiredMixin, View):
-#     def get(self, request):
-#         form = AccountInfoForm(initial={
-#             'username': request.user.username,
-#             'email': request.user.email,
-#         })
-#         return render(request, "account_info.html", {'form': form})
-
-#     def post(self, request):
-#         form = AccountInfoForm(request.POST)
-#         if form.is_valid():
-#             username = form.cleaned_data['username']
-#             email = form.cleaned_data['email']
-#             current_password = form.cleaned_data['current_password']
-#             password1 = form.cleaned_data['password1']
-#             password2 = form.cleaned_data['password2']
-
-#             # 現在のパスワードを確認
-#             user = authenticate(username=request.user.username, password=current_password)
-#             if user is not None:
-#                 # ユーザー情報を更新
-#                 request.user.username = username
-#                 request.user.email = email
-
-#                 # パスワードが一致する場合は更新
-#                 if password1 == password2:
-#                     request.user.set_password(password1)  # パスワードをハッシュ化して保存
-#                     request.user.save()  # ユーザー情報を保存
-#                     messages.success(request, 'アカウント情報が更新されました。')
-#                     return redirect('home')  # リダイレクト先を指定
-#                 else:
-#                     messages.error(request, '新しいパスワードが一致しません。')
-#             else:
-#                 messages.error(request, '現在のパスワードが正しくありません。')
-#         return render(request, "account_info.html", {'form': form})
-
-
-# class AccountInfoView(LoginRequiredMixin, View):
-#     def get(self, request):
-#         form = AccountInfoForm(initial={
-#             'username': request.user.username,
-#             'email': request.user.email,
-#         })
-#         return render(request, "account_info.html", {'form': form})
-
-#     def post(self, request):
-#         form = AccountInfoForm(request.POST)
-#         if form.is_valid():
-#             username = form.cleaned_data['username']
-#             email = form.cleaned_data['email']
-#             current_password = form.cleaned_data['current_password']
-#             password1 = form.cleaned_data['password1']
-#             password2 = form.cleaned_data['password2']
-
-#             # 現在のパスワードを確認
-#             user = authenticate(username=request.user.username, password=current_password)
-#             if user is not None:
-#                 # ユーザー情報を更新
-#                 request.user.username = username
-#                 request.user.email = email
-
-#                 # パスワードが一致する場合は更新
-#                 if password1 == password2 and password1:
-#                     request.user.set_password(password1)  # パスワードをハッシュ化して保存
-#                     request.user.save()  # ユーザー情報を保存
-#                     update_session_auth_hash(request, request.user)  # セッションを更新
-#                     messages.success(request, 'アカウント情報が更新されました。')
-#                     return redirect('home')  # リダイレクト先を指定
-#                 elif password1 != password2:
-#                     messages.error(request, '新しいパスワードが一致しません。')
-#                 else:
-#                     messages.info(request, 'パスワードは変更されませんでした。')
-#             else:
-#                 messages.error(request, '現在のパスワードが正しくありません。')
-        
-#         return render(request, "account_info.html", {'form': form})

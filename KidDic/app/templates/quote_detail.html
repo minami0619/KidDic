@@ -1,96 +1,112 @@
-{% load static %}
-<h1>{{ quote.content }}</h1>
-<p>{{ quote.child.nickname }} - {{ quote.created_at|date:"Y/m/d" }}</p>
-<p>登録者: {{ quote.user.username }}</p>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KidDic - 名言詳細</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
 
-<!-- 画像のタップでモーダル表示 -->
-<img src="{{ quote.image_url }}" alt="名言の画像" id="quote-image" onclick="showImageModal()">
+    <!-- ハンバーガーメニュー -->
+    <header class="header">
+        <div class="navtext-container">
+            <div class="navtext">KidDic</div>
+        </div>
+        <input type="checkbox" class="menu-btn" id="menu-btn">
+        <label for="menu-btn" class="menu-icon"><span class="navicon"></span></label>
+        <ul class="menu">
+            <li><a href="{% url 'account_info' %}">アカウント情報変更</a></li>
+            <li><a href="#children-list">お子さま一覧</a></li>
+            <li><a href="#invite-family">家族招待</a></li>
+            <li><a href="#logout">ログアウト</a></li>
+        </ul>
+    </header>
 
-<!-- モーダルウィンドウの構造 -->
-<div id="myModal" class="modal">
-  <span class="close" onclick="closeImageModal()">&times;</span>
-  <img class="modal-content" id="modalImage">
-  <div id="caption"></div>
-</div>
+    <main>
+        <!-- 大枠の開始 -->
 
-<!-- SNS公開トグルボタン -->
-<form method="post" action="{% url 'quote_toggle_sns' quote.id %}">
-    {% csrf_token %}
-    <label>SNS公開</label>
-    <input type="checkbox" name="public" {% if quote.public %}checked{% endif %} onchange="this.form.submit()">
-</form>
+        <div class="quote-container">
+            <!-- 名言詳細カード -->
+            <section class="quote-detail">
+                <div class="quote-header">
+                    <span>{{ quote.child.nickname }} ({{ quote.child.age }}歳)
+                        {% if quote.start_date %}
+                            {{ quote.start_date|date:"Y/m/d" }}
+                            {% if quote.end_date %}
+                                ～ {{ quote.end_date|date:"Y/m/d" }}
+                            {% endif %}
+                        {% endif %}
+                    </span>
+                </div>
 
-<!-- コメント表示 -->
-<h2>コメント</h2>
-<ul>
-    {% for comment in comments %}
-    <li>{{ comment.user.username }}: {{ comment.content }} - {{ comment.created_at|date:"Y/m/d H:i" }}
-        {% if comment.user == request.user %}
-        <form method="post" action="{% url 'comment_delete' comment.id %}">
-            {% csrf_token %}
-            <button type="submit">削除</button>
-        </form>
-        {% endif %}
-    </li>
-    {% empty %}
-    <li>コメントはまだありません。</li>
-    {% endfor %}
-</ul>
+                <div class="quote-content">
+                    <p>{{ quote.content }}</p>
+                    <!-- 説明がある場合のみ表示 -->
+                    {% if quote.description %}
+                        <p>{{ quote.description }}</p>
+                    {% endif %}
+                </div>
 
-<!-- コメント追加フォーム -->
-<h3>コメントを追加</h3>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">コメントを投稿</button>
-</form>
+                <!-- 画像表示 -->
+                <div class="quote-image">
+                {% if quote.image %}
+                <img src="{{ quote.image.url }}" alt="quote image" class="quote-image" onclick="showImageModal(this)">
+                {% endif %}
+                </div>
 
-<!-- モーダルのCSSスタイル -->
-<style>
-.modal {
-  display: none;
-  position: fixed;
-  z-index: 1;
-  padding-top: 60px;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0,0,0,0.7);
-}
+                <!-- モーダルウィンドウの構造 -->
+                <div id="myModalImage" class="modal-image">
+                <span class="close-image" onclick="closeImageModal()">&times;</span>
+                <img class="modal-content-image" id="modalImage">
+                <div id="caption"></div>
+                </div>
 
-.modal-content {
-  margin: auto;
-  display: block;
-  width: 80%;
-  max-width: 700px;
-}
+                <!-- SNS公開トグルボタン -->
+                <form method="post" action="{% url 'quote_toggle_sns' quote.id %}">
+                    {% csrf_token %}
+                    <div class="sns-toggle">
+                        <label>SNS公開</label>
+                        <input type="checkbox" name="public" {% if quote.public %}checked{% endif %} onchange="this.form.submit()">
+                    </div>
+                </form>
 
-.close {
-  position: absolute;
-  top: 15px;
-  right: 35px;
-  color: white;
-  font-size: 40px;
-  font-weight: bold;
-  transition: 0.3s;
-}
+                <!-- コメント表示 -->
+                <h2>コメント</h2>
+                <div class="comments">
+                    <ul>
+                        {% for comment in comments %}
+                        <li>
+                            <p>{{ comment.user.username }} {{ comment.created_at|date:"Y/m/d H:i" }}</p>
+                            <p>{{ comment.content }}</p>
+                            {% if comment.user == request.user %}
+                            <form method="post" action="{% url 'comment_delete' comment.id %}">
+                                {% csrf_token %}
+                                <button type="submit">削除</button>
+                            </form>
+                            {% endif %}
+                        </li>
+                        {% empty %}
+                        <li>コメントはまだありません。</li>
+                        {% endfor %}
+                    </ul>
+                </div>
 
-.close:hover, .close:focus {
-  color: #bbb;
-  text-decoration: none;
-  cursor: pointer;
-}
+                <!-- コメント追加フォーム -->
+                <div class="comment-form">
+                    <h3>コメントを追加</h3>
+                    <form method="post">
+                        {% csrf_token %}
+                        <textarea name="content" placeholder="コメントする"></textarea>
+                        <button type="submit">コメントを投稿</button>
+                    </form>
+                </div>
+            </section>
 
-#caption {
-  text-align: center;
-  color: #ccc;
-  padding: 10px 20px;
-}
-</style>
+        </div> <!-- 大枠の終了 -->
+    </main>
 
-<!-- 静的ファイルとしてのJavaScriptを読み込み -->
-<script src="{% static 'js/modal.js' %}"></script>
-
-    
+    <script src="{% static 'js/modal.js' %}"></script>
+</body>
+</html>

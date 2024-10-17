@@ -33,21 +33,23 @@
 
 
 // 画像を表示するためのモーダル
-function showImageModal() {
-    var modal = document.getElementById("myModal");
+function showImageModal(imgElement) {
+    var modal = document.getElementById("myModalImage");
     var modalImg = document.getElementById("modalImage");
     var captionText = document.getElementById("caption");
-    var img = document.getElementById("quote-image");
 
-    modal.style.display = "block";  // モーダルを表示
-    modalImg.src = img.src;  // クリックされた画像をモーダルに表示
-    captionText.innerHTML = img.alt;  // 画像のalt属性をキャプションに表示
+    // 引数から画像のsrcを取得する
+    modal.style.display = "block";
+    modalImg.src = imgElement.src;  // imgElementからsrcを取得
+    modalImg.alt = imgElement.alt;  // imgElementからaltを取得
+    captionText.innerHTML = imgElement.alt;  // キャプションにaltを表示
 }
 
 function closeImageModal() {
-    var modal = document.getElementById("myModal");
-    modal.style.display = "none";  // モーダルを非表示にする
+    var modal = document.getElementById("myModalImage");
+    modal.style.display = "none";  // モーダルを非表示
 }
+
 
 // プラスボタンが押された時だけモーダルを開く
 document.querySelector(".fixed-add-btn").addEventListener("click", openQuoteModal);
