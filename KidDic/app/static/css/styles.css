@@ -25,7 +25,7 @@
 
 
 
-/* モーダルのスタイル */
+/* 名言登録モーダルのスタイル */
 .modal {
   display: none;
   flex-direction: column; /* 要素を縦に並べる */
@@ -46,7 +46,7 @@
   overflow-y: auto; /* コンテンツがあふれた場合にスクロールできるように */
 }
 
-/* モーダルの背景 */
+/* 名言登録モーダルの背景 */
 .modal-background {
   display: none;
   position: fixed;
@@ -81,6 +81,29 @@
 }
 
 /* フォーム要素のスタイル */
+
+.form-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* 要素間の余白を調整 */
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+.child-select {
+  width: 150px;  /* フォームの幅を設定 */
+  padding: 4px;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  margin-right: 10px; /* テキストとの間に少し余白を作る */
+}
+
+.form-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  white-space: nowrap; /* テキストの折り返しを防ぐ */
+}
+
 .modal-content label {
   display: block;
   margin-top: 4px; /* ラベルと入力エリアの間隔を縮める */
@@ -107,22 +130,21 @@
   margin-bottom: 15px;
 }
 
-.date-inputs, .date-range-end {
+.date-inputs {
   display: flex;
-  gap: 10px;
   align-items: center;
 }
 
-.date-range select {
-  width: 80px; /* 適切な幅を設定 */
-  padding: 5px;
-  border-radius: 5px;
+.date-input {
+  width: 150px; /* 適切な幅を設定 */
+  margin-right: 10px; /* 日付の間にスペースを作る */
 }
 
-
-.modal-content textarea {
-  height: 80px; /* テキストエリアの高さを少し小さく */
+.date-separator {
+  margin: 0 10px; /* 〜の前後にスペースを作る */
+  font-size: 1.2rem; /* 〜のサイズを調整 */
 }
+
 
 /* 画像選択ボタンのスタイル */
 .modal-content input[type="file"] {
@@ -310,13 +332,32 @@
   cursor: pointer;
 }
 
-/* 個別名言画面のCSS */
+/* 個別名言画面のXシェア */
+.twitter-share {
+  text-align: center;
+  margin-top: 20px;
+}
 
+.twitter-share .twitter-share-button {
+  background-color: #1da1f2;
+  color: white;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.twitter-share .twitter-share-button:hover {
+  background-color: #0d8bec;
+}
+
+
+/* 個別名言画面のCSS */
 .quote-container {
-  border: 2px solid #ddd;
+  border: none;
   padding: 20px;
   border-radius: 8px;
-  background-color: #f9f9f9;
+  background-color: #ffffff;
   max-width: 800px;
   margin: 20px auto;
   padding-top: 70px; 
@@ -324,7 +365,7 @@
 
 .quote-detail {
   border: 2px solid #ddd;
-  padding: 20px;
+  padding: 40px;
   margin-bottom: 20px;
   border-radius: 8px;
 }
@@ -359,13 +400,40 @@
 }
 
 
+/* 名言編集画面のCSS */
+
+.button-group {
+  display: flex;
+  justify-content: space-between;
+}
+
+.button-group button {
+  padding: 10px;
+  font-size: 16px;
+  width: 200px;  /* ボタンの幅を統一 */
+  margin-right: 5px;
+  background-color: #555; /* ボタンの色 */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.button-group button:hover {
+  background-color: #333;
+}
+
+.button-group button:last-child {
+  margin-right: 0;  /* 最後のボタンの余白をなくす */
+}
+
 
 
 /* ハンバーガーメニューのCSS */
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    padding-top: 50; /* ヘッダーの高さ+余白 */
+    padding-top: 30px; /* ヘッダーの高さ+余白 */
   }
   
   /* Navbar & Navmenu color */
@@ -509,4 +577,5 @@ body {
     color: #ddd;
     letter-spacing: 4px;
     font-size: 35px;
+    text-decoration: none;
   }

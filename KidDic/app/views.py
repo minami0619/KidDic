@@ -61,6 +61,7 @@ class HomeView(LoginRequiredMixin, View):
 
         # 子どもリストを取得
         children = Child.objects.filter(family=family)
+        categories = Category.objects.all()  # すべてのカテゴリを取得
 
         # フィルタリング
         keyword = request.GET.get('keyword')
@@ -68,11 +69,15 @@ class HomeView(LoginRequiredMixin, View):
         category = request.GET.get('category')
         speaker = request.GET.get('speaker')
         sort_order = request.GET.get('sort_order', 'newest')
+        year_month = request.GET.get('year_month')
 
         if keyword:
             quotes = quotes.filter(content__icontains=keyword)
-        if year:
-            quotes = quotes.filter(created_at__year=year)
+        if year_month:
+            year, month = year_month.split('-')
+            quotes = quotes.filter(start_date__year=year, start_date__month=month)
+        # if year:
+        #     quotes = quotes.filter(created_at__year=year)
         if category:
             quotes = quotes.filter(category__id=category)
         if speaker:
@@ -93,6 +98,7 @@ class HomeView(LoginRequiredMixin, View):
         return render(request, 'home.html', {
             'quotes': quotes,
             'children': children,
+            'categories': categories,
             'form': form,
         })
 
@@ -102,25 +108,43 @@ class HomeView(LoginRequiredMixin, View):
             print(form.cleaned_data)
 
             quote = form.save(commit=False)
-            # child = form.cleaned_data.get('child')
-            # quote.child = child
             quote.start_date = form.cleaned_data.get('start_date')
             quote.end_date = form.cleaned_data.get('end_date')
             quote.child = form.cleaned_data.get('child')
             quote.description = form.cleaned_data.get('description')
+            # quote.category = form.cleaned_data.get('category')
+            # category_id = request.POST.get('category')
+            # if category_id:
+            #     category = Category.objects.get(id=category_id)
+            #     quote.category = category
+            # else:
+            #     quote.category = None  # カテゴリが選択されていない場合はNoneを設定
+            
+            category_id = form.cleaned_data.get('category')
+            if category_id:
+                category = Category.objects.get(id=category_id)
+                quote.category = category
+            else:
+                quote.category = None
+
             quote.save()
             return redirect('home')
+        
+            # フォームが無効だった場合のデバッグ
+            print(form.errors)  # これでコンソールにエラーが表示される
+            print(request.POST)  # 送信されたデータも確認できる
 
         # エラー時は再度レンダリング
         family = request.user.family
         children = Child.objects.filter(family=family)
         quotes = Quote.objects.filter(child__family=family)
+        categories = Category.objects.all()
         return render(request, "home.html", {
             'form': form,
             'children': children,
-            'quotes': quotes
+            'quotes': quotes,
+            'categories': categories,
         })
-
 
 
 class AccountInfoView(LoginRequiredMixin, View):
@@ -131,13 +155,11 @@ class AccountInfoView(LoginRequiredMixin, View):
             'email': user.email,
             'current_user': user  # 現在のユーザーを initial に設定
         })
-        return render(request, "account_info.html", {
-            "form": form
-        })
+        return render(request, "account_info.html", {"form": form})
 
     def post(self, request):
         user = request.user  # 現在のユーザーを取得
-        form = AccountInfoForm(request.POST)  # フォームにユーザー情報を渡す
+        form = AccountInfoForm(request.POST, initial={'current_user': user})  # フォームにユーザー情報を渡す
 
         if form.is_valid():
             # フォームからのデータをユーザーに設定
@@ -159,9 +181,7 @@ class AccountInfoView(LoginRequiredMixin, View):
 
             return redirect("home")
 
-        return render(request, "account_info.html", {
-            "form": form
-        })    
+        return render(request, "account_info.html", {"form": form})    
 
 class ChildCreateView(View):
     def get(self, request):
@@ -195,11 +215,6 @@ class ChildCreateView(View):
 
         return redirect('home')
         
-
-class QuoteListView(LoginRequiredMixin, View):
-    def get(self, request):
-        quotes = Quote.objects.filter(child__family=request.user)
-        return render(request, 'quote_list.html', {'quotes': quotes})
 
 class QuoteDetailView(LoginRequiredMixin, View):
     def get(self, request, pk):
@@ -237,8 +252,9 @@ class QuoteEditView(View):
     def get(self, request, pk):
         # 名言を取得し、編集用フォームを表示
         quote = get_object_or_404(Quote, pk=pk)
+        children = Child.objects.filter(family=request.user.family)  # 家族内の子どもを取得
         form = QuoteForm(instance=quote)
-        return render(request, 'quote_edit.html', {'form': form, 'quote': quote})
+        return render(request, 'quote_edit.html', {'form': form, 'quote': quote, 'children': children})
 
     def post(self, request, pk):
         # 名言を取得し、フォームからのデータで更新
@@ -249,9 +265,15 @@ class QuoteEditView(View):
             return redirect('home')  # ホーム画面にリダイレクト
         return render(request, 'quote_edit.html', {'form': form, 'quote': quote})
 
-    def post_delete(self, request, pk):
-        # 名言を取得し削除
+    # def post_delete(self, request, pk):
+    #     # 名言を取得し削除
+    #     quote = get_object_or_404(Quote, pk=pk)
+    #     quote.delete()
+    #     return redirect('home')
+class QuoteDeleteView(View):
+    def post(self, request, pk):
         quote = get_object_or_404(Quote, pk=pk)
         quote.delete()
         return redirect('home')
+
     

@@ -4,97 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KidDic - アカウント情報変更</title>
-    <style>
-        body {
-            display: flex;
-            justify-content: center; /* 横方向の中央揃え */
-            align-items: center; /* 縦方向の中央揃え */
-            height: 100vh; /* 画面全体の高さを確保 */
-            margin: 0; /* 余白を無くす */
-            font-family: Arial, sans-serif; /* フォントの設定 */
-            text-align: center;
-        }
-        .container {
-            margin: 0;
-            padding: 20px;
-        }
-        h1 {
-            font-size: 30px;
-            margin-bottom: 30px; /* タイトルとテキストの行間を狭める */
-        }
-        .form-group {
-            display: flex; /* 横並びにする */
-            justify-content: flex-start; /* 左寄せに変更 */
-            align-items: center; /* ラベルと入力欄の垂直方向のズレを修正 */
-            margin-bottom: 30px; /* 各フォーム要素の間隔を設定 */
-            text-align: left;
-        }
-        label {
-            font-size: 16px;
-            margin-right: 20px; /* ラベルと入力フィールドの間隔を設定 */
-            width: 200px; /* ラベルの固定幅 */
-            text-align: right; /* ラベルを右揃えにする */
-        }
-        input {
-            padding: 8px;
-            width: 250px; /* 入力フィールドの幅 */
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            width: 40%;
-        }
-        button:hover {
-            background-color: #0056b3; /* ボタンホバー時の色 */
-        }
-        a {
-            display: block;
-            margin-top: 30px;
-            font-size: 16px;
-            text-decoration: none;
-            color: blue;
-        }
-        a:hover {
-            text-decoration: underline; /* ホバー時の下線を追加 */
-        }
-    </style>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/form_styles.css' %}"> <!-- form_style.cssを読み込む -->
 </head>
 <body>
-    <div class="container">
-        <h1>アカウント情報変更</h1>
-        <form method="post">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="username">名前／ニックネーム:</label>
-                <input type="text" id="username" name="username" value="{{ form.username.value|default:'' }}">
-            </div>
-            <div class="form-group">
-                <label for="email">メールアドレス:</label>
-                <input type="email" id="email" name="email" value="{{ form.email.value|default:'' }}">
-            </div>
-            <div class="form-group">
-                <label for="current_password">現在のパスワード:</label>
-                <input type="password" id="current_password" name="current_password">
-            </div>
-            <div class="form-group">
-                <label for="password1">新しいパスワード:</label>
-                <input type="password" id="password1" name="password1">
-            </div>
-            <div class="form-group">
-                <label for="password2">新しいパスワード確認:</label>
-                <input type="password" id="password2" name="password2">
-            </div>
-            <button type="submit">変更を保存</button>
-        </form>
-        {{ form.errors }}
-        <a href="{% url 'home' %}">ホームに戻る</a>   
-    </div>
+
+    <!-- ハンバーガーメニューの実装 -->
+    <header class="header">
+        <div class="navtext-container">
+            <a href="{% url 'home' %}" class="navtext">KidDic</a>
+        </div>
+        <input type="checkbox" class="menu-btn" id="menu-btn">
+        <label for="menu-btn" class="menu-icon"><span class="navicon"></span></label>
+        <ul class="menu">
+            <li><a href="{% url 'account_info' %}">アカウント情報変更</a></li>
+            <li><a href="#children-list">お子さま一覧</a></li>
+            <li><a href="#invite-family">家族招待</a></li>
+            <li><a href="#logout">ログアウト</a></li>
+        </ul>
+    </header>
+    
+    <section class="form-section">
+        <div class="container">
+            <h1>アカウント情報変更</h1>
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="username">名前／ニックネーム:</label>
+                    {{ form.username }}
+                </div>
+                <div class="form-group">
+                    <label for="email">メールアドレス:</label>
+                    {{ form.email }}
+                </div>
+                <div class="form-group">
+                    <label for="current_password">現在のパスワード:</label>
+                    {{ form.current_password }}
+                </div>
+                <div class="form-group">
+                    <label for="password1">新しいパスワード:</label>
+                    {{ form.password1 }}
+                </div>
+                <div class="form-group">
+                    <label for="password2">新しいパスワード確認:</label>
+                    {{ form.password2 }}
+                </div>
+                <button type="submit">変更を保存</button>
+            </form>
+             
+        </div>
+    </section>
+       
 </body>
 </html>

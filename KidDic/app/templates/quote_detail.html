@@ -12,7 +12,7 @@
     <!-- ハンバーガーメニュー -->
     <header class="header">
         <div class="navtext-container">
-            <div class="navtext">KidDic</div>
+            <a href="{% url 'home' %}" class="navtext">KidDic</a>
         </div>
         <input type="checkbox" class="menu-btn" id="menu-btn">
         <label for="menu-btn" class="menu-icon"><span class="navicon"></span></label>
@@ -26,8 +26,8 @@
 
     <main>
         <!-- 大枠の開始 -->
-
         <div class="quote-container">
+
             <!-- 名言詳細カード -->
             <section class="quote-detail">
                 <div class="quote-header">
@@ -62,6 +62,12 @@
                 <img class="modal-content-image" id="modalImage">
                 <div id="caption"></div>
                 </div>
+
+                <!-- Xシェアボタン -->
+                <div class="twitter-share">
+                    <a href="https://twitter.com/intent/tweet?text=今日の『{{ quote.child.nickname }}』の名言%0A『{{ quote.content }}』%0A意味：『{{ quote.description }}』%0A（KidDicのURL）" class="twitter-share-button" target="_blank">Tweet</a>
+                </div>
+                <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
                 <!-- SNS公開トグルボタン -->
                 <form method="post" action="{% url 'quote_toggle_sns' quote.id %}">

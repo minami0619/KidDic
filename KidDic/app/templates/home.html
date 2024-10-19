@@ -12,7 +12,7 @@
     <!-- ハンバーガーメニューの実装 -->
     <header class="header">
         <div class="navtext-container">
-            <div class="navtext">KidDic</div>
+            <a href="{% url 'home' %}" class="navtext">KidDic</a>
         </div>
         <input type="checkbox" class="menu-btn" id="menu-btn">
         <label for="menu-btn" class="menu-icon"><span class="navicon"></span></label>
@@ -31,18 +31,14 @@
                 <input type="text" name="keyword" placeholder="キーワード" value="{{ request.GET.keyword }}" class="search-input">
 
                 <!-- 年の選択肢 -->
-                <select name="year" class="search-select">
-                    <option value="">年</option>
-                    {% for year in year_range %}
-                        <option value="{{ year }}" {% if request.GET.year == year %}selected{% endif %}>{{ year }}</option>
-                    {% endfor %}
-                </select>
+                <!-- <label for="year_month">年月</label> -->
+                <input type="month" id="year_month" name="year_month" class="search-select" value="{{ request.GET.year_month }}">
 
                 <!-- カテゴリの選択肢 -->
                 <select name="category" class="search-select">
                     <option value="">カテゴリ</option>
                     {% for category in categories %}
-                        <option value="{{ category.id }}" {% if request.GET.category == category.id %}selected{% endif %}>{{ category.name }}</option>
+                        <option value="{{ category.id }}" {% if request.GET.category == category.id %}selected{% endif %}>{{ category.category_name }}</option>
                     {% endfor %}
                 </select>
 
@@ -112,30 +108,30 @@
     <div id="quoteModal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeQuoteModal()">&times;</span>
-            <h2>{{ child.nickname }}の名言を登録する</h2>
-            
             <form method="post" action="{% url 'home' %}" enctype="multipart/form-data">
                 {% csrf_token %}
+                <div class="form-header">
+                    <select name="child" id="child" class="child-select" required>
+                        {% for child in children %}
+                            <option value="{{ child.id }}">{{ child.nickname }}</option>
+                        {% endfor %}
+                    </select>
+                    <h2>の名言を登録する</h2>
+                </div>
 
-                <!-- 子ども選択 -->
-                <label for="child">子ども</label>
-                <select name="child" id="child" required>
-                    {% for child in children %}
-                        <option value="{{ child.id }}">{{ child.nickname }}</option>
-                    {% endfor %}
-                </select>
-            
                 <!-- 名言 -->
                 <label for="content">名言 <span style="color:red;">※必須</span></label>
                 <input type="text" name="content" id="content" required>
                 
                 <!-- 日付 -->
                 <div class="date-range">
-                    <label for="start_date">開始日</label>
-                    <input type="date" name="start_date" id="start_date">
-                    <label for="end_date">終了日</label>
-                    <input type="date" name="end_date" id="end_date">
-                </div>
+                    <label for="start_date">日付</label>
+                    <div class="date-inputs">
+                        <input type="date" name="start_date" id="start_date" class="date-input">
+                        <span class="date-separator">〜</span>
+                        <input type="date" name="end_date" id="end_date" class="date-input">
+                    </div>
+                </div>                
 
                 <!-- 説明 -->
                 <label for="description">説明</label>
@@ -144,10 +140,11 @@
                 <!-- カテゴリ -->
                 <label for="category">カテゴリ</label>
                 <select name="category" id="category">
+                    <option value="">--選択してください--</option>
                     {% for category in categories %}
-                        <option value="{{ category.id }}">{{ category.name }}</option>
+                        <option value="{{ category.id }}" {% if category.id == quote.category.id %}selected{% endif %}>{{ category.category_name }}</option>
                     {% endfor %}
-                </select>
+                </select>                
 
                 <!-- 画像選択 -->
                 <label for="image">写真</label>

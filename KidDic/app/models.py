@@ -3,6 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 from django.utils import timezone
 
+
 # Create your models here.
 
 class User(AbstractUser):
@@ -50,9 +51,17 @@ class Child(models.Model):
     def __str__(self):
         return self.nickname
 
+class Category(models.Model):
+    category_name = models.CharField(max_length=255)  # カテゴリ名
+    created_at = models.DateTimeField(auto_now_add=True)  # 作成日時
+    updated_at = models.DateTimeField(auto_now=True)  # 更新日時
+
+    def __str__(self):
+        return self.category_name
     
 class Quote(models.Model):
     child = models.ForeignKey(Child, on_delete=models.CASCADE)
+    # user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     content = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     public = models.BooleanField(default=False)
@@ -63,7 +72,7 @@ class Quote(models.Model):
     end_date = models.DateField(null=True, blank=True)  # 任意の終了日
 
     image = models.ImageField(upload_to='quotes_images/', null=True, blank=True)
-    category = models.CharField(max_length=100, blank=True)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
         return self.content
@@ -79,13 +88,6 @@ class Comment(models.Model):
     def __str__(self):
         return self.content[:20]  # コメントの先頭20文字を返す
 
-class Category(models.Model):
-    category_name = models.CharField(max_length=255)  # カテゴリ名
-    created_at = models.DateTimeField(auto_now_add=True)  # 作成日時
-    updated_at = models.DateTimeField(auto_now=True)  # 更新日時
-
-    def __str__(self):
-        return self.category_name
 
 class Family(models.Model):
     invite_url = models.CharField(max_length=255)  # 家族招待用のURL
