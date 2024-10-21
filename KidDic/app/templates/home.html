@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
-
     <!-- ハンバーガーメニューの実装 -->
     <header class="header">
         <div class="navtext-container">
@@ -18,11 +17,12 @@
         <label for="menu-btn" class="menu-icon"><span class="navicon"></span></label>
         <ul class="menu">
             <li><a href="{% url 'account_info' %}">アカウント情報変更</a></li>
-            <li><a href="#children-list">お子さま一覧</a></li>
-            <li><a href="#invite-family">家族招待</a></li>
-            <li><a href="#logout">ログアウト</a></li>
+            <li><a href="{% url 'child_list' %}">お子さま一覧</a></li>
+            <li><a href="{% url 'family_invite' %}">家族招待</a></li>
+            <li><a href="{% url 'logout' %}">ログアウト</a></li>
         </ul>
     </header>
+   
 
     <main>
         <!-- 検索フォーム -->
@@ -77,8 +77,10 @@
                                         ～ {{ quote.end_date|date:"Y/m/d" }}
                                     {% endif %}
                                 {% endif %}
-                            </span>                            
+                            </span> 
+                            {% if user.is_authenticated %}                           
                             <a href="{% url 'quote_edit' quote.id %}" class="edit-link" onclick="event.stopPropagation();">編集</a>
+                            {% endif %}
                         </div>
                         <p>{{ quote.content }}</p>
                         <!-- 説明がある場合のみ表示 -->
@@ -91,6 +93,11 @@
                             {% endif %}
                             <span>コメント数: {{ quote.comment_set.count }}</span>
                         </div>
+                        <!-- Xシェアボタン -->
+                        <div class="twitter-share">
+                            <a href="https://twitter.com/intent/tweet?text=今日の　{{ quote.child.nickname }}　の名言%0A『{{ quote.content }}』%0A意味：{{ quote.description }}%0A %0A KidDic：" class="twitter-share-button" target="_blank">Tweet</a> 
+                        </div>
+                        <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
                     </div>
                 </a>
                 {% empty %}

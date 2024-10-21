@@ -18,9 +18,9 @@
         <label for="menu-btn" class="menu-icon"><span class="navicon"></span></label>
         <ul class="menu">
             <li><a href="{% url 'account_info' %}">アカウント情報変更</a></li>
-            <li><a href="#children-list">お子さま一覧</a></li>
-            <li><a href="#invite-family">家族招待</a></li>
-            <li><a href="#logout">ログアウト</a></li>
+            <li><a href="{% url 'child_list' %}">お子さま一覧</a></li>
+            <li><a href="{% url 'family_invite' %}">家族招待</a></li>
+            <li><a href="{% url 'logout' %}">ログアウト</a></li>
         </ul>
     </header>
 
@@ -62,12 +62,6 @@
                 <img class="modal-content-image" id="modalImage">
                 <div id="caption"></div>
                 </div>
-
-                <!-- Xシェアボタン -->
-                <div class="twitter-share">
-                    <a href="https://twitter.com/intent/tweet?text=今日の『{{ quote.child.nickname }}』の名言%0A『{{ quote.content }}』%0A意味：『{{ quote.description }}』%0A（KidDicのURL）" class="twitter-share-button" target="_blank">Tweet</a>
-                </div>
-                <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
                 <!-- SNS公開トグルボタン -->
                 <form method="post" action="{% url 'quote_toggle_sns' quote.id %}">

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KidDic - 名言編集</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/form_styles.css' %}">
+</head>
+<body>
+
+    <!-- ハンバーガーメニュー -->
+    <header class="header">
+        <div class="navtext-container">
+            <a href="{% url 'home' %}" class="navtext">KidDic</a>
+        </div>
+        <input type="checkbox" class="menu-btn" id="menu-btn">
+        <label for="menu-btn" class="menu-icon"><span class="navicon"></span></label>
+        <ul class="menu">
+            <li><a href="{% url 'account_info' %}">アカウント情報変更</a></li>
+            <li><a href="{% url 'child_list' %}">お子さま一覧</a></li>
+            <li><a href="{% url 'family_invite' %}">家族招待</a></li>
+            <li><a href="{% url 'logout' %}">ログアウト</a></li>
+        </ul>
+    </header>
+
+    <main>
+        <!-- 大枠の開始 -->
+        <div class="quote-container">
+            <section class="quote-detail">
+                <div class="child-edit-form">
+                    <h2>お子さま情報変更</h2>
+                    <form method="POST" action="{% url 'child_edit' child.id %}">
+                        {% csrf_token %}
+                        <label for="nickname">ニックネーム：</label>
+                        <input type="text" id="nickname" name="nickname" value="{{ child.nickname }}" required>
+                
+                        <label for="birthdate">生年月日：</label>
+                        <input type="date" id="birthdate" name="birthdate" value="{{ child.birthdate }}" required>
+                
+                        <button type="submit">変更</button>
+                    </form>
+                    <a href="{% url 'child_list' %}">ホームに戻る</a>
+                </div>
+                
+                
+            </section>
+        </div>
+    </main>    
+           
+</body>
+</html>

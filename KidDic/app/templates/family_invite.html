@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KidDic - 家族招待</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/form_styles.css' %}">
+</head>
+<body>
+
+    <!-- ハンバーガーメニュー -->
+    <header class="header">
+        <div class="navtext-container">
+            <a href="{% url 'home' %}" class="navtext">KidDic</a>
+        </div>
+        <input type="checkbox" class="menu-btn" id="menu-btn">
+        <label for="menu-btn" class="menu-icon"><span class="navicon"></span></label>
+        <ul class="menu">
+            <li><a href="{% url 'account_info' %}">アカウント情報変更</a></li>
+            <li><a href="{% url 'child_list' %}">お子さま一覧</a></li>
+            <li><a href="{% url 'family_invite' %}">家族招待</a></li>
+            <li><a href="{% url 'logout' %}">ログアウト</a></li>
+        </ul>
+    </header>
+
+    <main>
+        <h2>家族招待</h2>
+        <p>家族を招待するためのリンクを共有してください。</p>
+        <p>招待用URL: <input type="text" readonly value="{{ invite_url }}"></p>
+    
+        <h3>共有中の家族一覧</h3>
+        <ul>
+            {% for member in members %}
+                <li>{{ member.username }}</li> 
+            {% endfor %}
+        </ul>
+    </main>
+      
+           
+</body>
+</html>

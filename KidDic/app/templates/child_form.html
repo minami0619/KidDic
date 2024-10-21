@@ -12,13 +12,21 @@
     <title>お子さま情報登録 - KidDic</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/form_styles.css' %}">
 </head>
 <body>
     <header>
         <h1>お子さま情報登録</h1>
     </header>
 
-    <section class="form-section">
+    <!-- <section class="form-section"> -->
+        {% if errors %}
+            <ul class="error-messages">
+                {% for error in errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
         <p>名言辞典をつくるためにお子さまの情報を登録してください。お子さまの情報は登録後も設定から変更できます。</p>
 
         <form method="post" action="{% url 'child_add' %}">
@@ -40,8 +48,8 @@
             <button type="submit">登録</button>
         </form>
 
-        <a href="{% url 'home' %}">ホームへ戻る</a>
-    </section>
+        <a href="{% url 'home' %}">ホームへ戻る</a>    
+    <!-- </section> -->
 
     <script src="{% static 'js/child_registration.js' %}"></script>
 </body>

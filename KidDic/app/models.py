@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 from django.utils import timezone
+import uuid
 
 
 # Create your models here.
@@ -17,7 +18,8 @@ class User(AbstractUser):
     email = models.EmailField(max_length=255, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    family = models.ForeignKey('Family', on_delete=models.SET_NULL, null=True, blank=True)  # 家族との関連付け
+    family = models.ForeignKey('Family', on_delete=models.SET_NULL, null=True, blank=True, related_name="members")  # 家族との関連付け
+    is_first_login = models.BooleanField(default=True, null=True)
 
     USERNAME_FIELD = "username"
     EMAIL_FIELD = "email"
@@ -90,9 +92,14 @@ class Comment(models.Model):
 
 
 class Family(models.Model):
-    invite_url = models.CharField(max_length=255)  # 家族招待用のURL
+    invite_url = models.CharField(max_length=255, unique=True)  # 家族招待用のURL
     created_at = models.DateTimeField(auto_now_add=True)  # 作成日時
     updated_at = models.DateTimeField(auto_now=True)  # 更新日時
+
+    def save(self, *args, **kwargs):
+        if not self.invite_url:
+            self.invite_url = str(uuid.uuid4())  # UUIDを使ってURLを生成
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.invite_url  # URLを文字列表現として返す

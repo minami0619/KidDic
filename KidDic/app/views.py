@@ -12,6 +12,7 @@ from datetime import datetime
 from .forms import QuoteForm
 from .models import Child
 from django.utils import timezone
+from django.urls import reverse
 
 # Create your views here.
 
@@ -25,29 +26,42 @@ class SignupView(View):
         return render(request, "signup.html", context={
             "form": form
         })
+
     def post(self, request):
-        print(request.POST)
         form = SignupForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect("home")
+            return post_login_redirect(user)  # 共通のリダイレクト関数を使用
         return render(request, "signup.html", context={
             "form": form
         })
 
+def post_login_redirect(user):
+    """子ども情報が登録済みかを確認し、適切な画面にリダイレクト"""
+    if not Child.objects.filter(family=user.family).exists():
+        return redirect("child_add")  # 子ども情報未登録の場合
+    return redirect("home")  # 子ども情報が登録済みの場合
+
+
 class LoginView(View):
     def get(self, request):
-        return render(request, "login.html")
-    def post(self, request):
-        print(request.POST)
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            login(request, form.user)
-            return redirect("home")
+        form = LoginForm()
         return render(request, "login.html", context={
             "form": form
-        })    
+        })
+
+    def post(self, request):
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            user = form.user
+            login(request, user)
+            return post_login_redirect(user)  # 共通のリダイレクト関数を使用
+        return render(request, "login.html", context={
+            "form": form
+        })
+
+
 
 class HomeView(LoginRequiredMixin, View):
     login_url = "login"
@@ -112,13 +126,6 @@ class HomeView(LoginRequiredMixin, View):
             quote.end_date = form.cleaned_data.get('end_date')
             quote.child = form.cleaned_data.get('child')
             quote.description = form.cleaned_data.get('description')
-            # quote.category = form.cleaned_data.get('category')
-            # category_id = request.POST.get('category')
-            # if category_id:
-            #     category = Category.objects.get(id=category_id)
-            #     quote.category = category
-            # else:
-            #     quote.category = None  # カテゴリが選択されていない場合はNoneを設定
             
             category_id = form.cleaned_data.get('category')
             if category_id:
@@ -129,10 +136,6 @@ class HomeView(LoginRequiredMixin, View):
 
             quote.save()
             return redirect('home')
-        
-            # フォームが無効だった場合のデバッグ
-            print(form.errors)  # これでコンソールにエラーが表示される
-            print(request.POST)  # 送信されたデータも確認できる
 
         # エラー時は再度レンダリング
         family = request.user.family
@@ -145,6 +148,12 @@ class HomeView(LoginRequiredMixin, View):
             'quotes': quotes,
             'categories': categories,
         })
+
+    # def get(self, request):
+    #     quotes = Quote.objects.filter(public=True)  # 公開された名言のみ表示
+    #     return render(request, "home.html", {"quotes": quotes})
+
+
 
 
 class AccountInfoView(LoginRequiredMixin, View):
@@ -188,32 +197,56 @@ class ChildCreateView(View):
         return render(request, 'child_form.html', {'today_date': now().date()})
 
     def post(self, request):
-        # ユーザーにFamilyが設定されていない場合、Familyを作成する
         if request.user.family is None:
             family = Family.objects.create(invite_url="example_invite_url")
             request.user.family = family
             request.user.save()
 
-    def post(self, request):
-        print(f"User's family: {request.user.family}")
-        # 入力されたニックネームと生年月日を取得
         nicknames = request.POST.getlist('nickname')
         birthdates = request.POST.getlist('birthdate')
+        errors = []
 
-        # 複数の子ども情報を保存
         for nickname, birthdate in zip(nicknames, birthdates):
             try:
                 child = Child(
                     nickname=nickname,
                     birthdate=birthdate,
-                    family=request.user.family  # familyを設定
+                    family=request.user.family
                 )
-                child.save()  # エラーがここで発生したらキャッチ
+                child.save()
             except IntegrityError as e:
-                print(f"Error saving child: {e}")
-                return render(request, 'error.html', {'message': f'保存エラー: {e}'})
+                errors.append(f"Error saving {nickname}: {e}")
+
+        if errors:
+            return render(request, 'child_form.html', {
+                'today_date': now().date(),
+                'errors': errors
+            })
 
         return redirect('home')
+
+class ChildListView(View):
+    def get(self, request):
+        children = Child.objects.filter(family=request.user.family)
+        return render(request, 'child_list.html', {'children': children})
+
+class ChildEditView(View):
+    def get(self, request, child_id):
+        child = get_object_or_404(Child, id=child_id, family=request.user.family)
+        return render(request, 'child_edit.html', {'child': child})
+
+    def post(self, request, child_id):
+        child = get_object_or_404(Child, id=child_id, family=request.user.family)
+        child.nickname = request.POST['nickname']
+        child.birthdate = request.POST['birthdate']
+        child.save()
+        return redirect('child_list')
+
+class ChildDeleteView(View):
+    def post(self, request, child_id):
+        child = get_object_or_404(Child, id=child_id, family=request.user.family)
+        child.delete()
+        return redirect('child_list')
         
 
 class QuoteDetailView(LoginRequiredMixin, View):
@@ -222,6 +255,15 @@ class QuoteDetailView(LoginRequiredMixin, View):
         comments = quote.comment_set.all()  # 名言に紐づくコメント
         form = CommentForm()
         return render(request, 'quote_detail.html', {'quote': quote, 'comments': comments, 'form': form})
+
+class QuoteDetailView(View):
+    def get(self, request, pk):
+        quote = get_object_or_404(Quote, pk=pk)
+        home_url = request.build_absolute_uri(reverse('home'))
+        return render(request, 'quote_detail.html', {
+            'quote': quote,
+            'home_url': home_url
+        })
 
     def post(self, request, pk):
         quote = get_object_or_404(Quote, pk=pk)
@@ -265,15 +307,41 @@ class QuoteEditView(View):
             return redirect('home')  # ホーム画面にリダイレクト
         return render(request, 'quote_edit.html', {'form': form, 'quote': quote})
 
-    # def post_delete(self, request, pk):
-    #     # 名言を取得し削除
-    #     quote = get_object_or_404(Quote, pk=pk)
-    #     quote.delete()
-    #     return redirect('home')
 class QuoteDeleteView(View):
     def post(self, request, pk):
         quote = get_object_or_404(Quote, pk=pk)
         quote.delete()
         return redirect('home')
 
-    
+class FamilyInviteView(View):
+    def get(self, request):
+        family = request.user.family
+        if family is None:
+            # 家族が未設定の場合、新しいFamilyを作成
+            family = Family.objects.create()
+            request.user.family = family
+            request.user.save()
+
+        invite_url = request.build_absolute_uri(f"/invite/{family.invite_url}")
+        members = family.members.all()  # 関連するユーザー（家族のメンバー）を取得
+        return render(request, 'family_invite.html', {
+            'members': members,
+            'invite_url': invite_url
+        })
+
+class FamilySignupView(View):
+    def get(self, request, invite_url):
+        form = SignupForm()
+        return render(request, 'family_signup.html', {'form': form, 'invite_url': invite_url})
+
+    def post(self, request, invite_url):
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            family = Family.objects.get(invite_url=invite_url)
+            user.family = family
+            user.save()
+            login(request, user)
+            return redirect('home')
+        return render(request, 'family_signup.html', {'form': form, 'invite_url': invite_url})  # フォームが無効だった場合
+

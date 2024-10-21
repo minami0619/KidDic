@@ -1,5 +1,5 @@
 
-/* form-sectionに関するスタイル */
+/* アカウント情報変更画面css */
 .form-section {
     display: flex;
     justify-content: center; /* 横方向の中央揃え */
@@ -67,4 +67,28 @@
 
 .form-section a:hover {
     text-decoration: underline; /* ホバー時の下線を追加 */
+}
+
+
+/* お子さま一覧、お子さま情報変更画面css */
+.child-list, .child-edit-form {
+    margin: 20px;
+}
+
+.child-entry {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+button {
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #0056b3;
 }

@@ -19,9 +19,9 @@
         <label for="menu-btn" class="menu-icon"><span class="navicon"></span></label>
         <ul class="menu">
             <li><a href="{% url 'account_info' %}">アカウント情報変更</a></li>
-            <li><a href="#children-list">お子さま一覧</a></li>
-            <li><a href="#invite-family">家族招待</a></li>
-            <li><a href="#logout">ログアウト</a></li>
+            <li><a href="{% url 'child_list' %}">お子さま一覧</a></li>
+            <li><a href="{% url 'family_invite' %}">家族招待</a></li>
+            <li><a href="{% url 'logout' %}">ログアウト</a></li>
         </ul>
     </header>
     
