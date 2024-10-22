@@ -70,7 +70,7 @@ class QuoteForm(forms.ModelForm):
 
     class Meta:
         model = Quote
-        fields = ['child', 'content', 'description', 'start_date', 'end_date', 'image', 'category']
+        fields = ['child', 'content', 'description', 'start_date', 'end_date', 'image', 'category', 'public']
 
 class CommentForm(forms.ModelForm):
     class Meta:

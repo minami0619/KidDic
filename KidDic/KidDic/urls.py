@@ -17,7 +17,7 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path
-from app.views import PortfolioView, SignupView, LoginView, HomeView, AccountInfoView, ChildCreateView, QuoteDetailView, QuoteToggleSNSView, CommentDeleteView, QuoteEditView, QuoteDeleteView, ChildListView, ChildEditView, ChildDeleteView, FamilyInviteView, FamilySignupView
+from app.views import PortfolioView, SignupView, LoginView, HomeView, AccountInfoView, ChildCreateView, QuoteDetailView, CommentDeleteView, QuoteEditView, QuoteDeleteView, ChildListView, ChildEditView, ChildDeleteView, FamilyInviteView, FamilySignupView
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.auth import views as auth_views
@@ -36,7 +36,6 @@ urlpatterns = [
     path('quotes/<int:pk>/', QuoteDetailView.as_view(), name='quote_detail'),
     path('quotes/<int:pk>/edit/', QuoteEditView.as_view(), name='quote_edit'),  # 名言編集画面のURLパターン
     path('quotes/<int:pk>/delete/', QuoteDeleteView.as_view(), name='quote_delete'),  # 名言削除用のURLパターン
-    path('quotes/<int:pk>/toggle_sns/', QuoteToggleSNSView.as_view(), name='quote_toggle_sns'),
     path('comments/<int:pk>/delete/', CommentDeleteView.as_view(), name='comment_delete'),
     path('invite/', FamilyInviteView.as_view(), name='family_invite'),
     path('invite/<str:invite_url>/', FamilySignupView.as_view(), name='family_signup'),

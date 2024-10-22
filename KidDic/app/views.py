@@ -71,7 +71,7 @@ class HomeView(LoginRequiredMixin, View):
         family = request.user.family
 
         # 名言をファミリーに関連するものにフィルタリング
-        quotes = Quote.objects.filter(child__family=family)
+        quotes = Quote.objects.filter(child__family=request.user.family).order_by('-created_at')
 
         # 子どもリストを取得
         children = Child.objects.filter(family=family)
@@ -82,7 +82,6 @@ class HomeView(LoginRequiredMixin, View):
         year = request.GET.get('year')
         category = request.GET.get('category')
         speaker = request.GET.get('speaker')
-        sort_order = request.GET.get('sort_order', 'newest')
         year_month = request.GET.get('year_month')
 
         if keyword:
@@ -90,20 +89,26 @@ class HomeView(LoginRequiredMixin, View):
         if year_month:
             year, month = year_month.split('-')
             quotes = quotes.filter(start_date__year=year, start_date__month=month)
-        # if year:
-        #     quotes = quotes.filter(created_at__year=year)
+
         if category:
             quotes = quotes.filter(category__id=category)
         if speaker:
             quotes = quotes.filter(child__nickname__icontains=speaker)
 
+        print(f"Filtered quotes: {quotes}")
+
+        sort_order = request.GET.get('sort_order', 'newest')
         # ソート
         if sort_order == 'newest':
             quotes = quotes.order_by('-created_at')
         elif sort_order == 'alphabet':
             quotes = quotes.order_by('content')
         elif sort_order == 'year':
-            quotes = quotes.order_by('created_at')
+            quotes = quotes.order_by('start_date')
+
+        print(f"Sort order: {sort_order}")
+        print(quotes.query)
+
         
                 # フォームの設定
         form = QuoteForm()
@@ -113,7 +118,6 @@ class HomeView(LoginRequiredMixin, View):
             'quotes': quotes,
             'children': children,
             'categories': categories,
-            'form': form,
         })
 
     def post(self, request):
@@ -148,10 +152,21 @@ class HomeView(LoginRequiredMixin, View):
             'quotes': quotes,
             'categories': categories,
         })
+    
+    def get(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            quotes = Quote.objects.filter(public=True)  # 公開状態の名言のみ表示
+        else:
+            quotes = Quote.objects.all()  # ログインユーザーには全て表示
 
-    # def get(self, request):
-    #     quotes = Quote.objects.filter(public=True)  # 公開された名言のみ表示
-    #     return render(request, "home.html", {"quotes": quotes})
+        categories = Category.objects.all()
+        children = Child.objects.all()
+
+        return render(request, 'home.html', {
+            'quotes': quotes,
+            'categories': categories,  # カテゴリデータも必要
+            'children': children,  # 子ども情報も必要
+        })
 
 
 
@@ -241,6 +256,17 @@ class ChildEditView(View):
         child.birthdate = request.POST['birthdate']
         child.save()
         return redirect('child_list')
+    
+    def post(self, request, child_id):
+        child = get_object_or_404(Child, id=child_id)
+        if request.method == 'POST':
+            form = ChildForm(request.POST, instance=child)
+            if form.is_valid():
+                form.save()
+                return redirect('child_list')
+        else:
+            form = ChildForm(instance=child)
+        return render(request, 'child_edit.html', {'form': form})
 
 class ChildDeleteView(View):
     def post(self, request, child_id):
@@ -252,17 +278,16 @@ class ChildDeleteView(View):
 class QuoteDetailView(LoginRequiredMixin, View):
     def get(self, request, pk):
         quote = get_object_or_404(Quote, pk=pk)
-        comments = quote.comment_set.all()  # 名言に紐づくコメント
+        comments = quote.comment_set.all()  # 名言に関連するコメント
         form = CommentForm()
-        return render(request, 'quote_detail.html', {'quote': quote, 'comments': comments, 'form': form})
+        home_url = request.build_absolute_uri(reverse('home'))  # ホーム画面のURLを取得
 
-class QuoteDetailView(View):
-    def get(self, request, pk):
-        quote = get_object_or_404(Quote, pk=pk)
-        home_url = request.build_absolute_uri(reverse('home'))
         return render(request, 'quote_detail.html', {
             'quote': quote,
-            'home_url': home_url
+            'comments': comments,
+            'form': form,
+            'home_url': home_url,
+            'public': quote.public
         })
 
     def post(self, request, pk):
@@ -275,14 +300,21 @@ class QuoteDetailView(View):
             comment.save()
             return redirect('quote_detail', pk=pk)
         comments = quote.comment_set.all()
-        return render(request, 'quote_detail.html', {'quote': quote, 'comments': comments, 'form': form})
+        return render(request, 'quote_detail.html', {
+            'quote': quote,
+            'comments': comments,
+            'form': form
+        })
 
-class QuoteToggleSNSView(LoginRequiredMixin, View):
-    def post(self, request, pk):
-        quote = get_object_or_404(Quote, pk=pk, child__family=request.user)
-        quote.public = not quote.public
+    def post_public_toggle(self, request, pk):
+        quote = get_object_or_404(Quote, pk=pk)
+        quote.public = request.POST.get('public') == 'on'  # SNS公開のトグルスイッチ状態を保存
         quote.save()
         return redirect('quote_detail', pk=pk)
+
+    
+
+
 
 class CommentDeleteView(LoginRequiredMixin, View):
     def post(self, request, pk):

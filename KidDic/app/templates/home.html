@@ -6,6 +6,12 @@
     <title>KidDic - 名言辞典</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        .no-click {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+    </style>
 </head>
 <body>
     <!-- ハンバーガーメニューの実装 -->
@@ -15,7 +21,7 @@
         </div>
         <input type="checkbox" class="menu-btn" id="menu-btn">
         <label for="menu-btn" class="menu-icon"><span class="navicon"></span></label>
-        <ul class="menu">
+        <ul class="menu {% if not user.is_authenticated %}no-click{% endif %}">
             <li><a href="{% url 'account_info' %}">アカウント情報変更</a></li>
             <li><a href="{% url 'child_list' %}">お子さま一覧</a></li>
             <li><a href="{% url 'family_invite' %}">家族招待</a></li>
@@ -30,8 +36,7 @@
             <form method="get" action="{% url 'home' %}" class="search-form">
                 <input type="text" name="keyword" placeholder="キーワード" value="{{ request.GET.keyword }}" class="search-input">
 
-                <!-- 年の選択肢 -->
-                <!-- <label for="year_month">年月</label> -->
+                <!-- 年月の選択肢 -->
                 <input type="month" id="year_month" name="year_month" class="search-select" value="{{ request.GET.year_month }}">
 
                 <!-- カテゴリの選択肢 -->
@@ -54,7 +59,7 @@
                 <button type="submit" class="search-btn">検索</button>
 
                 <!-- ソート順の選択肢 -->
-                <select name="sort_order" class="search-select">
+                <select name="sort_order" class="search-select" onchange="this.form.submit()">
                     <option value="newest" {% if request.GET.sort_order == 'newest' %}selected{% endif %}>新着順</option>
                     <option value="alphabet" {% if request.GET.sort_order == 'alphabet' %}selected{% endif %}>五十音順</option>
                     <option value="year" {% if request.GET.sort_order == 'year' %}selected{% endif %}>年代順</option>
@@ -66,38 +71,49 @@
         <section class="quote-list">
             <div class="quote-grid">
                 {% for quote in quotes %}
-                <a href="{% url 'quote_detail' quote.id %}" class="quote-card-link">
+                <a href="{% url 'quote_detail' quote.id %}" class="quote-card-link {% if not user.is_authenticated %}no-click{% endif %}">
                     <div class="quote-card">
-                        <div class="quote-header">
-                            <span>{{ quote.child.nickname }} {{ quote.child.age }}
-                                <!-- 名言カードの表示部分 -->
+                        <div class="child-info-container">
+                            <div class="child-info">
+                                <span>{{ quote.child.nickname }}</span>
+                                <span>{{ quote.child.age }}</span>
+                            </div>
+                            <div class="date-info">
                                 {% if quote.start_date %}
                                     {{ quote.start_date|date:"Y/m/d" }}
                                     {% if quote.end_date %}
                                         ～ {{ quote.end_date|date:"Y/m/d" }}
                                     {% endif %}
                                 {% endif %}
-                            </span> 
-                            {% if user.is_authenticated %}                           
-                            <a href="{% url 'quote_edit' quote.id %}" class="edit-link" onclick="event.stopPropagation();">編集</a>
-                            {% endif %}
+                            </div>
                         </div>
-                        <p>{{ quote.content }}</p>
-                        <!-- 説明がある場合のみ表示 -->
+                        <div class="quote-content">
+                            「  {{ quote.content }}  」
+                        </div>
                         {% if quote.description %}
-                            <p>{{ quote.description }}</p>
+                            <p class="quote-description">{{ quote.description }}</p>
                         {% endif %}
-                        <div class="quote-footer">
+                        <div class="quote-actions">
                             {% if quote.image %}
-                                <img src="{{ quote.image.url }}" alt="quote image" class="quote-image">
+                            <img src="{{ quote.image.url }}" alt="quote image" class="quote-image">
                             {% endif %}
-                            <span>コメント数: {{ quote.comment_set.count }}</span>
+                            <!-- Xシェアボタン -->
+                            <div class="twitter-share">
+                                <a href="https://twitter.com/intent/tweet?text=今日の  {{ quote.child.nickname }}  の名言%0A『{{ quote.content }}』%0A意味 :{{ quote.description }}%0A %0A KidDic :" class="twitter-share-button" target="_blank">Tweet</a> 
+                            </div>
+                            <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                            <!-- コメント数 -->
+                            <div class="comment-count">
+                                <svg class="comment-icon" viewBox="0 0 24 24">
+                                    <path d="M21 6h-18c-1.1 0-2 0.9-2 2v8c0 1.1 0.9 2 2 2h4v3l3-3h11c1.1 0 2-0.9 2-2v-8c0-1.1-0.9-2-2-2zm0 10h-13.17l-1.41 1.41v-1.41h-4v-8h18v8z"/>
+                                </svg>
+                                <span>{{ quote.comment_set.count }}</span>
+                            </div>
+                            <!-- 編集ボタン -->
+                            {% if user.is_authenticated %}                           
+                            <a href="{% url 'quote_edit' quote.id %}" class="edit-button" onclick="event.stopPropagation();">編集</a>
+                            {% endif %}
                         </div>
-                        <!-- Xシェアボタン -->
-                        <div class="twitter-share">
-                            <a href="https://twitter.com/intent/tweet?text=今日の　{{ quote.child.nickname }}　の名言%0A『{{ quote.content }}』%0A意味：{{ quote.description }}%0A %0A KidDic：" class="twitter-share-button" target="_blank">Tweet</a> 
-                        </div>
-                        <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
                     </div>
                 </a>
                 {% empty %}
@@ -110,6 +126,7 @@
 
     </main>   
 
+    {% if user.is_authenticated %}
     <!-- モーダルの構造 -->
     <div id="modalBackground" class="modal-background"></div>
     <div id="quoteModal" class="modal">
@@ -166,7 +183,7 @@
 
     <!-- 固定ボタンでモーダルを開く -->
     <button class="fixed-add-btn" onclick="openQuoteModal()">+</button>
-
+    {% endif %}
     <script src="{% static 'js/modal.js' %}"></script>
 </body>
 </html>

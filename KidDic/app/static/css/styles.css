@@ -169,72 +169,144 @@
 }
 
 
-
-
-
-/* 名言リストをカード形式にする */
-.quote-list {
-    display: flex;
-    justify-content: center;
-    padding: 20px;
+/* 名言カードの基本スタイル */
+.quote-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 600px;  /* カード全体の幅 */
+  margin: 20px auto;  /* カードを中央に配置 */
 }
 
-.quote-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
+/* 名前・年齢と日時を横並びに配置 */
+.child-info-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 10px; /* 名言との間隔 */
 }
 
+/* 名前・年齢の枠 */
+.child-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f8f8;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  text-align: center;
+  width: 100px;  /* 幅を固定 */
+}
+
+/* 日時部分 */
+.date-info {
+  font-size: 14px;
+  margin-left: 15px;  /* 名前・年齢の枠の右隣に配置 */
+  white-space: nowrap;  /* 日時が複数行にわたらないようにする */
+}
+
+/* 名言テキスト部分 */
+.quote-content {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-left: -60px; /* 左側の余白を大きくする */
+  text-align: left;
+  white-space: pre-wrap; /* 改行を維持する */
+}
+
+/* 説明部分のスタイル */
+.quote-description {
+  margin-left: 100px; /* 名言と同じ余白を設定して頭文字を揃える */
+  text-align: left;
+}
+
+/* アクションボタン全体を右側に縦に並べる */
+.quote-actions {
+  display: flex;
+  flex-direction: column; /* 吹き出しの上にコメント数を表示する */
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+}
+
+/* コメント数表示のスタイル */
+.comment-count {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 10px;
+}
+
+.comment-icon {
+  width: 100%;
+  height: 100%;
+}
+
+/* 吹き出し内にコメント数を表示する */
+.comment-count span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* 中央に配置 */
+  font-size: 12px;
+  color: black; /* 数字の色を白に */
+}
+
+
+/* 編集ボタン */
+.edit-button {
+  background-color: #555;
+  color: #fff; /* 文字の色を白に設定 */
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  text-decoration: none; /* 下線をなくす */
+}
+
+.edit-button:hover {
+  background-color: #333;
+  text-decoration: none; /* ホバー時も下線をつけない */
+}
+
+/* 画像のスタイル */
+.quote-image {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-left: 15px;
+}
+
+/* Xシェアボタンのスタイル */
+.twitter-share {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.twitter-share img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-top: 5px; /* 画像とシェアボタンの間隔を調整 */
+}
+
+/* 下線を除去する */
 .quote-card-link {
   text-decoration: none;
   color: inherit;
 }
 
-.quote-card {
-  display: block;
-  background-color: #fff;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.3s ease;
-  width: 100%;  /* カードの幅を広げる */
-  max-width: 700px;  /* 必要に応じて最大幅を設定 */
-}
 
-.quote-card:hover {
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-}
-
-.quote-header {
-    display: flex;
-    justify-content: space-between;
-    font-weight: bold;
-}
-
-.quote-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 10px;
-}
-
-.quote-image {
-  max-width: 150px;  /* 画像の幅を画面サイズに合わせる */
-  max-height: 150px;  /* 画像の高さを300pxに制限 */
-  height: auto;  /* 画像の縦横比を保持 */
-  width: auto;  /* 幅も自動調整 */
-  border-radius: 8px;
-}
-
-.edit-link {
-    color: blue;
-    text-decoration: none;
-    margin-left: 10px;
-}
-
-.edit-link:hover {
-    text-decoration: underline;
-} */
 
 /* 検索フォームの横並び設定 */
 .search-section {
@@ -332,14 +404,14 @@
   cursor: pointer;
 }
 
-/* 個別名言画面のXシェア */
+/* 名言カードのXシェア */
 .twitter-share {
   text-align: center;
   margin-top: 20px;
 }
 
 .twitter-share .twitter-share-button {
-  background-color: #1da1f2;
+  background-color: #ffffff;
   color: white;
   padding: 10px 20px;
   text-decoration: none;
@@ -348,8 +420,58 @@
 }
 
 .twitter-share .twitter-share-button:hover {
-  background-color: #0d8bec;
+  background-color: #ffffff;
 }
+
+/* 個別名言画面SNS公開トグル */
+.toggle-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.toggle-text {
+  font-size: 12px;
+  margin-bottom: 5px; /* トグルスイッチとの間隔 */
+  color: #000; /* テキストの色 */
+  text-align: center; /* テキストを中央に揃える */
+}
+
+.toggle-button-1 {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+  border-radius: 20px;
+  background-color: #bdbdbd;
+  cursor: pointer;
+  transition: background-color .4s;
+}
+
+.toggle-button-1:has(input:checked) {
+  background-color: #4bd865;
+}
+
+.toggle-button-1::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #ffffffc0;
+  content: '';
+  transition: left .4s;
+}
+
+.toggle-button-1:has(input:checked)::after {
+  left: 20px;
+}
+
+.toggle-button-1 input {
+  display: none;
+}
+
 
 
 /* 個別名言画面のCSS */
@@ -370,34 +492,120 @@
   border-radius: 8px;
 }
 
-.quote-header, .quote-content, .quote-image, .comment-form {
+/* 登録者の表示 */
+.registrant {
+  font-size: 1em;
+  margin-left: auto;
+}
+
+/* 名言と画像を横並びに配置するコンテナ */
+.quote-contentt-container {
+  display: flex;
+  align-items: flex-start; /* 縦揃えをトップに */
+  gap: 20px; /* 名言と画像の間に余白を追加 */
   margin-bottom: 20px;
 }
+
+/* 名言と説明部分 */
+.quote-contentt {
+  flex: 3; /* 名言部分の幅を60%に */
+  font-size: 1.4em;
+  line-height: 1.6;
+  background-color: #fafafa;
+  border-left: 5px solid #ccc;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+/* 説明のスタイル */
+.quote-description {
+  font-style: italic;
+  margin-top: 10px;
+}
+
+/* 画像のスタイル */
+.quote-image {
+  text-align: center !important;
+  /* 中央揃え */
+  margin-top: 20px !important; /* 上に余白を追加 */
+}
+
+.quote-image img {
+  max-width: 80% !important; /* 画像の幅を全体の80%に制限 */
+  height: auto !important;
+  border-radius: 10px !important;
+  margin: 0 auto !important; /* 横の中央揃え */
+}
+
+
 
 
 .quote-header, .quote-content, .quote-image, .comments, .comment-form {
   margin-bottom: 20px;
 }
 
+/* コメント部分のスタイル */
 .comments ul {
   list-style-type: none;
   padding: 0;
 }
 
-.comment-form {
-  display: flex;
-  justify-content: space-between;
-  border-top: 1px solid #ddd;
-  padding-top: 10px;
+
+
+/* コメント削除ボタンを右側に配置 */
+.comments li {
+  position: relative;
+  padding: 10px 0;
+  border-top: 1px solid #ccc;
 }
 
-.comment-form input[type="text"], .comment-form button {
-  margin: 10px;
+.comments form {
+  position: absolute;
+  right: 0;
+  top: 10px;
+}
+
+.comments button {
+  background-color: #656565;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.comments button:hover {
+  background-color: #444444;
+}
+
+/* コメント追加フォームのスタイル */
+.comment-form {
+  margin-top: 20px;
+}
+
+.comment-form textarea {
+  width: 60%;
+  height: 50px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1em;
 }
 
 .comment-form button {
-  padding: 5px 10px;
+  background-color: #656565;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
 }
+
+.comment-form button:hover {
+  background-color: #444444;
+}
+
 
 
 /* 名言編集画面のCSS */
@@ -579,3 +787,10 @@ body {
     font-size: 35px;
     text-decoration: none;
   }
+
+
+/* 外部アクセス無効化CSS */
+.no-click {
+  pointer-events: none;
+  opacity: 0.6;
+}
