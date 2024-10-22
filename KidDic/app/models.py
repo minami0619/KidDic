@@ -63,7 +63,7 @@ class Category(models.Model):
     
 class Quote(models.Model):
     child = models.ForeignKey(Child, on_delete=models.CASCADE)
-    # user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     content = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     public = models.BooleanField(default=False)

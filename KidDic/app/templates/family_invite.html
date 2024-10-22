@@ -25,19 +25,25 @@
         </ul>
     </header>
 
-    <main>
-        <h2>家族招待</h2>
-        <p>家族を招待するためのリンクを共有してください。</p>
-        <p>招待用URL: <input type="text" readonly value="{{ invite_url }}"></p>
-    
-        <h3>共有中の家族一覧</h3>
-        <ul>
-            {% for member in members %}
-                <li>{{ member.username }}</li> 
-            {% endfor %}
-        </ul>
-    </main>
-      
+    <section class="content-section">
+        <main>
+            <h2>家族招待</h2>
+            <p>招待したい家族にURLを共有し、リンク先からアカウント登録をしてください。<br>子どもの名言を家族で共有することができます。</p>
+
+            <div class="invite-url-container">
+                <input type="text" readonly value="{{ invite_url }}">
+            </div>
+
+            <h3>共有中の家族一覧</h3>
+            <div class="shared-family-container">
+                <ul>
+                    {% for member in members %}
+                        <li>{{ member.username }}</li> 
+                    {% endfor %}
+                </ul>
+            </div>
+        </main>
+    </section>
            
 </body>
 </html>

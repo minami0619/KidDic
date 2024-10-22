@@ -35,18 +35,19 @@
                     <div class="child-entry">
                         <span>{{ child.nickname }}</span>
                         <span>{{ child.birthdate }} 生</span>
-                        <form method="POST" action="{% url 'child_edit' child.id %}">
-                            <button type="submit">編集</button>
-                        </form>
+                        <p>child.id: {{ child.id }}</p>
+                        <a href="{% url 'child_edit' child.id %}">
+                            <button type="button">編集</button>
+                        </a>
                         <form method="POST" action="{% url 'child_delete' child.id %}">
                             {% csrf_token %}
                             <button type="submit" onclick="return confirm('本当に削除しますか？');">削除</button>
                         </form>
                     </div>
                     {% endfor %}
-                    <form method="GET" action="{% url 'child_add' %}">
-                        <button type="submit">お子さま追加</button>
-                    </form>
+                    <a href="{% url 'child_add' %}">
+                        <button type="button">お子さま追加</button>
+                    </a>
                 </div>
                 
             </section>

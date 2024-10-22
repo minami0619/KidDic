@@ -92,3 +92,77 @@ button {
 button:hover {
     background-color: #0056b3;
 }
+
+
+
+/* 家族招待画面css */
+/* ヘッダーとコンテンツを分ける */
+.content-section {
+    margin-top: 80px; /* ヘッダーの高さ分の余白を設定 */
+    padding: 20px;
+    text-align: center;
+    font-family: Arial, sans-serif;
+}
+
+.main {
+    padding-top: 80px; /* ヘッダーにかぶらないよう余白を設定 */
+}
+
+/* 招待用URLの入力フォームのスタイル */
+input[type="text"] {
+    width: 80%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+/* 家族一覧のスタイル */
+h3 {
+    font-size: 20px;
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+
+ul {
+    list-style-type: none;
+    padding-left: 0;
+    font-size: 18px;
+}
+
+ul li {
+    margin-bottom: 10px;
+}
+
+/* ボックスのデザイン */
+.invite-url-container {
+    margin-top: 10px;
+    padding: 10px;
+    display: inline-block;
+    border-radius: 5px;
+}
+
+.shared-family-container {
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 5px;
+    width: 60%;
+    margin: 0 auto;
+    background-color: #f9f9f9;
+}
+
+.shared-family-container ul {
+    text-align: left;
+    list-style-position: inside;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    input[type="text"] {
+        width: 100%;
+    }
+    .shared-family-container {
+        width: 100%;
+    }
+}

@@ -31,16 +31,22 @@
             <section class="quote-detail">
                 <div class="child-edit-form">
                     <h2>お子さま情報変更</h2>
-                    <form method="POST" action="{% url 'child_edit' child.id %}">
-                        {% csrf_token %}
-                        <label for="nickname">ニックネーム：</label>
-                        <input type="text" id="nickname" name="nickname" value="{{ child.nickname }}" required>
-                
-                        <label for="birthdate">生年月日：</label>
-                        <input type="date" id="birthdate" name="birthdate" value="{{ child.birthdate }}" required>
-                
-                        <button type="submit">変更</button>
-                    </form>
+                    {% if child %}
+                        <form method="POST" action="{% url 'child_edit' child.id %}">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <label for="nickname">ニックネーム：</label>
+                            <input type="text" id="nickname" name="nickname" value="{{ child.nickname }}" required>
+                    
+                            <label for="birthdate">生年月日：</label>
+                            <input type="date" id="birthdate" name="birthdate" value="{{ child.birthdate }}" required>
+                    
+                            <button type="submit">変更</button>
+                        </form>
+                    {% else %}
+                        <p>お子さまの情報が見つかりません。</p>
+                    {% endif %}
+                    
                     <a href="{% url 'child_list' %}">ホームに戻る</a>
                 </div>
                 

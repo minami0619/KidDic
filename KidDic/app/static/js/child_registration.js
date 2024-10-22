@@ -6,11 +6,14 @@ document.getElementById('add-sibling-btn').addEventListener('click', function() 
     var newForm = document.createElement('div');
     newForm.classList.add('child-form');
     newForm.innerHTML = `
-        <label for="nickname">ニックネーム:</label>
-        <input type="text" name="nickname" required>
-
-        <label for="birthdate">生年月日:</label>
-        <input type="date" name="birthdate" value="${new Date().toISOString().slice(0, 10)}" required>
+        <div class="form-group">
+            <label for="nickname">ニックネーム:</label>
+            <input type="text" name="nickname" required>
+        </div>
+        <div class="form-group">
+            <label for="birthdate">生年月日:</label>
+            <input type="date" name="birthdate" value="${new Date().toISOString().slice(0, 10)}" required>
+        </div>
     `;
 
     // コンテナに新しいフォームを追加

@@ -66,71 +66,67 @@ class LoginView(View):
 class HomeView(LoginRequiredMixin, View):
     login_url = "login"
 
-    def get(self, request):
-        # ユーザーのファミリーを取得
-        family = request.user.family
+    def get(self, request, *args, **kwargs):
+        # ユーザーが認証されていない場合、公開状態の名言のみ表示
+        if not request.user.is_authenticated:
+            quotes = Quote.objects.filter(public=True)
+            family = None
+            children = None
+        else:
+            family = request.user.family
+            # ユーザーのファミリーに関連する名言を取得
+            quotes = Quote.objects.filter(child__family=family).order_by('-created_at')
+            children = Child.objects.filter(family=family)
 
-        # 名言をファミリーに関連するものにフィルタリング
-        quotes = Quote.objects.filter(child__family=request.user.family).order_by('-created_at')
-
-        # 子どもリストを取得
-        children = Child.objects.filter(family=family)
-        categories = Category.objects.all()  # すべてのカテゴリを取得
-
-        # フィルタリング
+        # フィルタリング条件を取得
         keyword = request.GET.get('keyword')
-        year = request.GET.get('year')
+        year_month = request.GET.get('year_month')
         category = request.GET.get('category')
         speaker = request.GET.get('speaker')
-        year_month = request.GET.get('year_month')
 
         if keyword:
             quotes = quotes.filter(content__icontains=keyword)
         if year_month:
             year, month = year_month.split('-')
             quotes = quotes.filter(start_date__year=year, start_date__month=month)
-
         if category:
             quotes = quotes.filter(category__id=category)
         if speaker:
             quotes = quotes.filter(child__nickname__icontains=speaker)
 
-        print(f"Filtered quotes: {quotes}")
-
+        # ソート順の取得
         sort_order = request.GET.get('sort_order', 'newest')
-        # ソート
+
         if sort_order == 'newest':
-            quotes = quotes.order_by('-created_at')
+            quotes = quotes.order_by('-start_date')
+        elif sort_order == 'oldest':
+            quotes = quotes.order_by('start_date')
         elif sort_order == 'alphabet':
             quotes = quotes.order_by('content')
-        elif sort_order == 'year':
-            quotes = quotes.order_by('start_date')
 
-        print(f"Sort order: {sort_order}")
-        print(quotes.query)
+        # すべてのカテゴリを取得
+        categories = Category.objects.all()
 
-        
-                # フォームの設定
+        # フォームの設定
         form = QuoteForm()
 
-        # テンプレートへのデータ渡し
+        # テンプレートにデータを渡してレンダリング
         return render(request, 'home.html', {
             'quotes': quotes,
             'children': children,
             'categories': categories,
+            'form': form,
         })
 
     def post(self, request):
         form = QuoteForm(request.POST, request.FILES)
         if form.is_valid():
-            print(form.cleaned_data)
-
             quote = form.save(commit=False)
             quote.start_date = form.cleaned_data.get('start_date')
             quote.end_date = form.cleaned_data.get('end_date')
             quote.child = form.cleaned_data.get('child')
             quote.description = form.cleaned_data.get('description')
-            
+
             category_id = form.cleaned_data.get('category')
             if category_id:
                 category = Category.objects.get(id=category_id)
@@ -141,7 +137,7 @@ class HomeView(LoginRequiredMixin, View):
             quote.save()
             return redirect('home')
 
-        # エラー時は再度レンダリング
+        # エラー時のレンダリング
         family = request.user.family
         children = Child.objects.filter(family=family)
         quotes = Quote.objects.filter(child__family=family)
@@ -151,21 +147,6 @@ class HomeView(LoginRequiredMixin, View):
             'children': children,
             'quotes': quotes,
             'categories': categories,
-        })
-    
-    def get(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            quotes = Quote.objects.filter(public=True)  # 公開状態の名言のみ表示
-        else:
-            quotes = Quote.objects.all()  # ログインユーザーには全て表示
-
-        categories = Category.objects.all()
-        children = Child.objects.all()
-
-        return render(request, 'home.html', {
-            'quotes': quotes,
-            'categories': categories,  # カテゴリデータも必要
-            'children': children,  # 子ども情報も必要
         })
 
 
@@ -247,26 +228,20 @@ class ChildListView(View):
 
 class ChildEditView(View):
     def get(self, request, child_id):
+        # 特定の子供を取得し、フォームに渡す
         child = get_object_or_404(Child, id=child_id, family=request.user.family)
-        return render(request, 'child_edit.html', {'child': child})
+        form = ChildForm(instance=child)  # 子供の情報をフォームに初期表示
+        return render(request, 'child_edit.html', {'form': form})
 
     def post(self, request, child_id):
+        print(child_id)
+        # 特定の子供を取得し、POSTデータをフォームに渡す
         child = get_object_or_404(Child, id=child_id, family=request.user.family)
-        child.nickname = request.POST['nickname']
-        child.birthdate = request.POST['birthdate']
-        child.save()
-        return redirect('child_list')
-    
-    def post(self, request, child_id):
-        child = get_object_or_404(Child, id=child_id)
-        if request.method == 'POST':
-            form = ChildForm(request.POST, instance=child)
-            if form.is_valid():
-                form.save()
-                return redirect('child_list')
-        else:
-            form = ChildForm(instance=child)
-        return render(request, 'child_edit.html', {'form': form})
+        form = ChildForm(request.POST, instance=child)  # フォームにPOSTデータを渡す
+        if form.is_valid():  # フォームのバリデーションを実行
+            form.save()  # バリデーションが通れば、データを保存
+            return redirect('child_list')  # 保存後、一覧ページへリダイレクト
+        return render(request, 'child_edit.html', {'form': form})  # エラー時にフォームを再表示
 
 class ChildDeleteView(View):
     def post(self, request, child_id):
