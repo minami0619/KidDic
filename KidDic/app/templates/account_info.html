@@ -25,36 +25,37 @@
         </ul>
     </header>
     
-    <section class="form-section">
-        <div class="container">
-            <h1>アカウント情報変更</h1>
-            <form method="post">
-                {% csrf_token %}
-                <div class="form-group">
-                    <label for="username">名前／ニックネーム:</label>
-                    {{ form.username }}
-                </div>
-                <div class="form-group">
-                    <label for="email">メールアドレス:</label>
-                    {{ form.email }}
-                </div>
-                <div class="form-group">
-                    <label for="current_password">現在のパスワード:</label>
-                    {{ form.current_password }}
-                </div>
-                <div class="form-group">
-                    <label for="password1">新しいパスワード:</label>
-                    {{ form.password1 }}
-                </div>
-                <div class="form-group">
-                    <label for="password2">新しいパスワード確認:</label>
-                    {{ form.password2 }}
-                </div>
-                <button type="submit">変更を保存</button>
-            </form>
-             
-        </div>
-    </section>
-       
+    <main>
+        <section class="form-section">
+            <div class="container">
+                <h1>アカウント情報変更</h1>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="username">名前／ニックネーム:</label>
+                        {{ form.username }}
+                    </div>
+                    <div class="form-group">
+                        <label for="email">メールアドレス:</label>
+                        {{ form.email }}
+                    </div>
+                    <div class="form-group">
+                        <label for="current_password">現在のパスワード:</label>
+                        {{ form.current_password }}
+                    </div>
+                    <div class="form-group">
+                        <label for="password1">新しいパスワード:</label>
+                        {{ form.password1 }}
+                    </div>
+                    <div class="form-group">
+                        <label for="password2">新しいパスワード確認:</label>
+                        {{ form.password2 }}
+                    </div>
+                    <button type="submit">変更を保存</button>
+                </form>
+                
+            </div>
+        </section>
+    </main>   
 </body>
 </html>

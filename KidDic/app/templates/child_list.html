@@ -28,30 +28,35 @@
     <main>
         <!-- 大枠の開始 -->
         <div class="quote-container">
+            <h2 class="child-list-title">お子さま一覧</h2> <!-- タイトルを大枠の上部に配置 -->
             <section class="quote-detail">
                 <div class="child-list">
-                    <h2>お子さま一覧</h2>
                     {% for child in children %}
                     <div class="child-entry">
-                        <span>{{ child.nickname }}</span>
-                        <span>{{ child.birthdate }} 生</span>
-                        <p>child.id: {{ child.id }}</p>
-                        <a href="{% url 'child_edit' child.id %}">
-                            <button type="button">編集</button>
-                        </a>
-                        <form method="POST" action="{% url 'child_delete' child.id %}">
-                            {% csrf_token %}
-                            <button type="submit" onclick="return confirm('本当に削除しますか？');">削除</button>
-                        </form>
+                        <div class="child-info">
+                            <span>{{ child.nickname }}</span>
+                            <span>{{ child.birthdate }} 生</span>
+                        </div>
+                        <div class="child-actions">
+                            <a href="{% url 'child_edit' child.id %}">
+                                <button type="button">編集</button>
+                            </a>
+                            <form method="POST" action="{% url 'child_delete' child.id %}" class="delete-form">
+                                {% csrf_token %}
+                                <button type="submit" onclick="return confirm('本当に削除しますか？');">削除</button>
+                            </form>
+                        </div>
                     </div>
                     {% endfor %}
-                    <a href="{% url 'child_add' %}">
-                        <button type="button">お子さま追加</button>
-                    </a>
+                    <div class="child-entry-add">
+                        <a href="{% url 'child_add' %}">
+                            <button type="button" class="add-child-btn">お子さま追加</button>
+                        </a>
+                    </div>
                 </div>
-                
             </section>
         </div>
+
     </main>    
            
 </body>

@@ -9,8 +9,9 @@ from app.models import Child, Quote, Comment, Category, Family
 from django.utils.timezone import now
 from django.db import IntegrityError
 from datetime import datetime
+from django.contrib.auth.decorators import login_required
 from .forms import QuoteForm
-from .models import Child
+from .models import Child, Quote
 from django.utils import timezone
 from django.urls import reverse
 
@@ -148,6 +149,20 @@ class HomeView(LoginRequiredMixin, View):
             'quotes': quotes,
             'categories': categories,
         })
+    
+@login_required
+def home_view(request):
+    if request.method == 'POST':
+        form = QuoteForm(request.POST)
+        if form.is_valid():
+            quote = form.save(commit=False)  # フォームを一旦保存しない
+            quote.user = request.user        # ログインユーザーを設定
+            quote.save()                     # ユーザー情報を含めて保存
+            return redirect('home')
+    else:
+        form = QuoteForm()
+    
+    return render(request, 'home.html', {'form': form})
 
 
 
@@ -231,7 +246,7 @@ class ChildEditView(View):
         # 特定の子供を取得し、フォームに渡す
         child = get_object_or_404(Child, id=child_id, family=request.user.family)
         form = ChildForm(instance=child)  # 子供の情報をフォームに初期表示
-        return render(request, 'child_edit.html', {'form': form})
+        return render(request, 'child_edit.html', {'form': form, 'child': child})
 
     def post(self, request, child_id):
         print(child_id)
