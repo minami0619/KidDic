@@ -103,3 +103,4 @@ class Family(models.Model):
 
     def __str__(self):
         return self.invite_url  # URLを文字列表現として返す
+    

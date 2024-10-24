@@ -19,3 +19,4 @@ document.getElementById('add-sibling-btn').addEventListener('click', function() 
     // コンテナに新しいフォームを追加
     container.appendChild(newForm);
 });
+

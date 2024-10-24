@@ -95,3 +95,4 @@ document.querySelectorAll('.quote-card').forEach(function(card) {
         window.location.href = url;  // カード全体をリンクとして機能させる
     });
 });
+

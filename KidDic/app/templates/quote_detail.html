@@ -76,7 +76,9 @@
                 <div class="sns-toggle">
                     <span class="toggle-text">SNS公開</span>
                     <label class="toggle-button-1">
-                        <input type="checkbox" name="public" {% if quote.public %}checked{% endif %}>
+                        <!-- publicフィールドの隠しデフォルト値（False） -->
+                        <input type="hidden" name="public" value="off">
+                        <input type="checkbox" name="public" value="on" {% if quote.public or not quote.pk %}checked{% endif %}>
                     </label>
                 </div>
 
@@ -118,3 +120,4 @@
     <script src="{% static 'js/modal.js' %}"></script>
 </body>
 </html>
+
