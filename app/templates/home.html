@@ -21,10 +21,10 @@
         </div>
         <input type="checkbox" class="menu-btn" id="menu-btn">
         <label for="menu-btn" class="menu-icon"><span class="navicon"></span></label>
-        <ul class="menu {% if not user.is_authenticated %}no-click{% endif %}">
-            <li><a href="{% url 'account_info' %}">アカウント情報変更</a></li>
-            <li><a href="{% url 'child_list' %}">お子さま一覧</a></li>
-            <li><a href="{% url 'family_invite' %}">家族招待</a></li>
+        <ul class="menu">
+            <li><a href="{% url 'account_info' %}" class="{% if not user.is_authenticated %}no-click{% endif %}">アカウント情報変更</a></li>
+            <li><a href="{% url 'child_list' %}" class="{% if not user.is_authenticated %}no-click{% endif %}">お子さま一覧</a></li>
+            <li><a href="{% url 'family_invite' %}" class="{% if not user.is_authenticated %}no-click{% endif %}">家族招待</a></li>
             <li><a href="{% url 'logout' %}">ログアウト</a></li>
         </ul>
     </header>
@@ -72,6 +72,7 @@
         <section class="quote-list">
             <div class="quote-grid">
                 {% for quote in quotes %}
+                {% if quote.public or user.is_authenticated %}
                 <a href="{% url 'quote_detail' quote.id %}" class="quote-card-link {% if not user.is_authenticated %}no-click{% endif %}">
                     <div class="quote-card">
                         <div class="child-info-container">
@@ -117,6 +118,7 @@
                         </div>
                     </div>
                 </a>
+                {% endif %}
                 {% empty %}
                 <div class="quote-card">
                     <p>名言が登録されていません。</p>
@@ -184,6 +186,9 @@
 
     <!-- 固定ボタンでモーダルを開く -->
     <button class="fixed-add-btn" onclick="openQuoteModal()">+</button>
+    {% else %}
+        <!-- 非ログインユーザー向けのメッセージ -->
+        <p>閲覧のみ可能です。投稿するには<a href="{% url 'login' %}">ログイン</a>してください。</p>
     {% endif %}
     <script src="{% static 'js/modal.js' %}"></script>
 </body>

@@ -66,7 +66,7 @@ class Quote(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
     content = models.CharField(max_length=255)
     description = models.TextField(blank=True)
-    public = models.BooleanField(default=False)
+    public = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

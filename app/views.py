@@ -109,7 +109,7 @@ class HomeView(LoginRequiredMixin, View):
         categories = Category.objects.all()
 
         # フォームの設定
-        form = QuoteForm()
+        form = QuoteForm() if request.user.is_authenticated else None
 
         # テンプレートにデータを渡してレンダリング
         return render(request, 'home.html', {
@@ -121,14 +121,22 @@ class HomeView(LoginRequiredMixin, View):
 
     def post(self, request):
         form = QuoteForm(request.POST, request.FILES)
+        print("Form data:", request.POST) 
         if form.is_valid():
             quote = form.save(commit=False)
             quote.start_date = form.cleaned_data.get('start_date')
             quote.end_date = form.cleaned_data.get('end_date')
             quote.child = form.cleaned_data.get('child')
             quote.description = form.cleaned_data.get('description')
-
             quote.category = form.cleaned_data.get('category')
+            quote.user = request.user
+            print("Public field:", form.cleaned_data.get('public'))  # デバッグ用
+            
+            # publicフィールドの処理: 'on' か 'off' をチェック
+            if request.POST.get('public') == 'on':
+                quote.public = True
+            else:
+                quote.public = False
             quote.save()
             return redirect('home')
 
