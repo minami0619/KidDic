@@ -71,6 +71,7 @@ class QuoteForm(forms.ModelForm):
     class Meta:
         model = Quote
         fields = ['child', 'content', 'description', 'start_date', 'end_date', 'image', 'category', 'public']
+    category = forms.ModelChoiceField(queryset=Category.objects.all(), required=False)
 
 class CommentForm(forms.ModelForm):
     class Meta:

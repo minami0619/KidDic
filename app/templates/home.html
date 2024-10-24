@@ -59,14 +59,11 @@
                 <button type="submit" class="search-btn">検索</button>
 
                 <!-- ソート順の選択肢 -->
-                <form method="get">
-                    <select name="sort_order" class="search-select" onchange="this.form.submit()">
-                        <option value="newest" {% if request.GET.sort_order == 'newest' %}selected{% endif %}>新着順</option>
-                        <option value="alphabet" {% if request.GET.sort_order == 'alphabet' %}selected{% endif %}>五十音順</option>
-                        <option value="year" {% if request.GET.sort_order == 'year' %}selected{% endif %}>年代順</option>
-                    </select>
-                </form>
-                
+                <select name="sort_order" class="search-select" onchange="this.form.submit()">
+                    <option value="newest" {% if request.GET.sort_order == "newest" %}selected{% endif %}>新着順</option>
+                    <option value="oldest" {% if request.GET.sort_order == "oldest" %}selected{% endif %}>古い順</option>
+                    <option value="alphabet" {% if request.GET.sort_order == "alphabet" %}selected{% endif %}>アルファベット順</option>
+                </select> 
                                              
             </form>
         </section>
