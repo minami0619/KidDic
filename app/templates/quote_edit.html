@@ -69,7 +69,15 @@
                         <!-- 画像選択 -->
                         <label for="image">写真</label>
                         {{ form.image|add_class:"file-input-class" }}
-                    
+
+                        <!-- SNS公開チェックボックス -->
+                        <div class="sns-visibility">
+                            <label for="public">
+                                <input type="checkbox" name="public" id="public" class="checkbox-class">
+                                SNS非公開にする
+                            </label>
+                        </div>                        
+                        
                         <!-- 保存・削除ボタン -->
                         <div class="button-group">
                             <form method="post" action="{% url 'quote_edit' quote.id %}">

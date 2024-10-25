@@ -11,7 +11,7 @@ from django.db import IntegrityError
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from .forms import QuoteForm
-from .models import Child, Quote
+from .models import Child, Quote, Category
 from django.utils import timezone
 from django.urls import reverse
 
@@ -99,9 +99,9 @@ class HomeView(LoginRequiredMixin, View):
         sort_order = request.GET.get('sort_order', 'newest')
 
         if sort_order == 'newest':
-            quotes = quotes.order_by('-start_date')
+            quotes = quotes.order_by('-created_at')
         elif sort_order == 'oldest':
-            quotes = quotes.order_by('start_date')
+            quotes = quotes.order_by('created_at')
         elif sort_order == 'alphabet':
             quotes = quotes.order_by('content')
 
@@ -109,7 +109,7 @@ class HomeView(LoginRequiredMixin, View):
         categories = Category.objects.all()
 
         # フォームの設定
-        form = QuoteForm()
+        form = QuoteForm() if request.user.is_authenticated else None
 
         # テンプレートにデータを渡してレンダリング
         return render(request, 'home.html', {
@@ -121,20 +121,22 @@ class HomeView(LoginRequiredMixin, View):
 
     def post(self, request):
         form = QuoteForm(request.POST, request.FILES)
+        print("Form data:", request.POST) 
         if form.is_valid():
             quote = form.save(commit=False)
             quote.start_date = form.cleaned_data.get('start_date')
             quote.end_date = form.cleaned_data.get('end_date')
             quote.child = form.cleaned_data.get('child')
             quote.description = form.cleaned_data.get('description')
-
-            category_id = form.cleaned_data.get('category')
-            if category_id:
-                category = Category.objects.get(id=category_id)
-                quote.category = category
+            quote.category = form.cleaned_data.get('category')
+            quote.user = request.user
+            print("Public field:", form.cleaned_data.get('public'))  # デバッグ用
+            
+            # publicフィールドの処理: 'on' か 'off' をチェック
+            if request.POST.get('public') == 'on':
+                quote.public = True
             else:
-                quote.category = None
-
+                quote.public = False
             quote.save()
             return redirect('home')
 
@@ -149,20 +151,6 @@ class HomeView(LoginRequiredMixin, View):
             'quotes': quotes,
             'categories': categories,
         })
-    
-@login_required
-def home_view(request):
-    if request.method == 'POST':
-        form = QuoteForm(request.POST)
-        if form.is_valid():
-            quote = form.save(commit=False)  # フォームを一旦保存しない
-            quote.user = request.user        # ログインユーザーを設定
-            quote.save()                     # ユーザー情報を含めて保存
-            return redirect('home')
-    else:
-        form = QuoteForm()
-    
-    return render(request, 'home.html', {'form': form})
 
 
 

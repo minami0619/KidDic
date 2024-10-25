@@ -423,55 +423,6 @@
   background-color: #ffffff;
 }
 
-/* 個別名言画面SNS公開トグル */
-.toggle-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.toggle-text {
-  font-size: 12px;
-  margin-bottom: 5px; /* トグルスイッチとの間隔 */
-  color: #000; /* テキストの色 */
-  text-align: center; /* テキストを中央に揃える */
-}
-
-.toggle-button-1 {
-  position: relative;
-  display: inline-block;
-  width: 40px;
-  height: 20px;
-  border-radius: 20px;
-  background-color: #bdbdbd;
-  cursor: pointer;
-  transition: background-color .4s;
-}
-
-.toggle-button-1:has(input:checked) {
-  background-color: #4bd865;
-}
-
-.toggle-button-1::after {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background-color: #ffffffc0;
-  content: '';
-  transition: left .4s;
-}
-
-.toggle-button-1:has(input:checked)::after {
-  left: 20px;
-}
-
-.toggle-button-1 input {
-  display: none;
-}
-
 
 
 /* 個別名言画面のCSS */
@@ -612,7 +563,8 @@
 
 .button-group {
   display: flex;
-  justify-content: space-between;
+  justify-content: center; /* 中央揃え */
+  gap: 15px; /* ボタン間のスペースを5pxに設定 */
 }
 
 .button-group button {
@@ -794,3 +746,10 @@ body {
   pointer-events: none;
   opacity: 0.6;
 }
+
+.sns-visibility {
+  display: flex;
+  align-items: center; /* チェックボックスと文字を垂直方向の中央に揃える */
+  gap: 5px;
+}
+

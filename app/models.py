@@ -66,7 +66,7 @@ class Quote(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
     content = models.CharField(max_length=255)
     description = models.TextField(blank=True)
-    public = models.BooleanField(default=False)
+    public = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -92,14 +92,14 @@ class Comment(models.Model):
 
 
 class Family(models.Model):
-    invite_url = models.CharField(max_length=255, unique=True)  # 家族招待用のURL
+    invite_url = models.CharField(max_length=255, unique=True, blank=True)  # 家族招待用のURL
     created_at = models.DateTimeField(auto_now_add=True)  # 作成日時
     updated_at = models.DateTimeField(auto_now=True)  # 更新日時
 
     def save(self, *args, **kwargs):
-        if not self.invite_url:
-            self.invite_url = str(uuid.uuid4())  # UUIDを使ってURLを生成
-        super().save(*args, **kwargs)
+        # invite_urlが設定されていない場合でもUUIDを自動生成
+        self.invite_url = str(uuid.uuid4())  # UUIDを使ってURLを常に生成
+        super().save(*args, **kwargs)  # 親クラスのsaveを呼び出し
 
     def __str__(self):
         return self.invite_url  # URLを文字列表現として返す

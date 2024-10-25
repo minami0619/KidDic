@@ -63,10 +63,18 @@ class ChildForm(forms.ModelForm):
         model = Child
         fields = ['nickname', 'birthdate']
 
+
 class QuoteForm(forms.ModelForm):
     start_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
     end_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
     category = forms.ModelChoiceField(queryset=Category.objects.all(), required=False)
+    
+    # SNS公開のチェックボックスフィールドを追加
+    public = forms.BooleanField(
+        required=False,
+        label="SNS非公開にする",
+        initial=False  # チェックなしが公開
+    )
 
     class Meta:
         model = Quote
@@ -76,5 +84,3 @@ class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ['content']
-
-        
