@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KidDic - 新規登録</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center; /* 横方向の中央揃え */
+            align-items: center; /* 縦方向の中央揃え */
+            height: 100vh; /* 画面全体の高さを確保 */
+            margin: 0; /* 余白を無くす */
+            font-family: Arial, sans-serif; /* フォントの設定 */
+            text-align: center;
+        }
+        .container {
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 30px;
+            margin-bottom: 30px; /* タイトルとテキストの行間を狭める */
+        }
+        p {
+            font-size: 20px;
+            margin-bottom: 15px; /* 説明文とフォームの行間を狭める */
+        }
+        .form-group {
+            display: flex; /* 横並びにする */
+            justify-content: flex-start; /* 左寄せに変更 */
+            align-items: center; /* ラベルと入力欄の垂直方向のズレを修正 */
+            margin-bottom: 30px; /* 各フォーム要素の間隔を設定 */
+            text-align: left;
+        }
+        label {
+            font-size: 16px;
+            margin-right: 20px; /* ラベルと入力フィールドの間隔を設定 */
+            width: 200px; /* ラベルの固定幅 */
+            text-align: right; /* ラベルを右揃えにする */
+        }
+        input {
+            padding: 8px;
+            width: 250px; /* 入力フィールドの幅 */
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 40%;
+        }
+        button:hover {
+            background-color: #0056b3; /* ボタンホバー時の色 */
+        }
+        a {
+            display: block;
+            margin-top: 30px;
+            font-size: 16px;
+            text-decoration: none;
+            color: blue;
+        }
+        a:hover {
+            text-decoration: underline; /* ホバー時の下線を追加 */
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>新規アカウント登録</h1>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="username">名前／ニックネーム　:</label>
+                <input type="text" id="username" name="username" value="{{ form.name.value|default:'' }}">
+            </div>
+            <div class="form-group">
+                <label for="email">メールアドレス　:</label>
+                <input type="email" id="email" name="email">
+            </div>
+            <div class="form-group">
+                <label for="password1">パスワード　:</label>
+                <input type="password" id="password1" name="password1">
+            </div>
+            <div class="form-group">
+                <label for="password2">確認用パスワード　:</label>
+                <input type="password" id="password2" name="password2">
+            </div>
+            <button type="submit">新規登録</button>
+        </form>
+        {{ form.errors }} 
+        <a href="{% url 'login' %}">ログイン画面へ戻る</a>   
+    </div>
+</body>
+</html>
+

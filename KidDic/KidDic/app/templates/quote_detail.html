@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KidDic - 名言詳細</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+
+    <!-- ハンバーガーメニュー -->
+    <header class="header">
+        <div class="navtext-container">
+            <a href="{% url 'home' %}" class="navtext">KidDic</a>
+        </div>
+        <input type="checkbox" class="menu-btn" id="menu-btn">
+        <label for="menu-btn" class="menu-icon"><span class="navicon"></span></label>
+        <ul class="menu">
+            <li><a href="{% url 'account_info' %}">アカウント情報変更</a></li>
+            <li><a href="{% url 'child_list' %}">お子さま一覧</a></li>
+            <li><a href="{% url 'family_invite' %}">家族招待</a></li>
+            <li><a href="{% url 'logout' %}">ログアウト</a></li>
+        </ul>
+    </header>
+
+    <main>
+        <!-- 大枠の開始 -->
+        <div class="quote-container">
+
+            <!-- 名言詳細カード -->
+            <section class="quote-detail">
+                <!-- 名言カードヘッダー -->
+                <div class="child-info-container">
+                    <div class="child-info">
+                        <span>{{ quote.child.nickname }}</span>
+                        <span>{{ quote.child.age }}</span>
+                    </div>
+                    <div class="date-info">
+                        {% if quote.start_date %}
+                            {{ quote.start_date|date:"Y/m/d" }}
+                            {% if quote.end_date %}
+                                ～ {{ quote.end_date|date:"Y/m/d" }}
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </span>
+                </div>
+
+                <!-- 名言と説明の部分 -->
+                <div class="quote-contentt">
+                    <p>「  {{ quote.content }}  」</p>
+                </div>
+
+                {% if quote.description %}
+                <div class="quote-description">
+                    <p>{{ quote.description }}</p>
+                </div>
+                {% endif %}
+
+                <!-- 画像表示 -->
+                <div class="quote-images">
+                    {% if quote.image %}
+                    <img src="{{ quote.image.url }}" alt="quote image" class="quote-image" onclick="showImageModal(this)">
+                    {% endif %}
+                </div>
+
+                <!-- モーダルウィンドウの構造 -->
+                <div id="myModalImage" class="modal-image">
+                <span class="close-image" onclick="closeImageModal()">&times;</span>
+                <img class="modal-content-image" id="modalImage">
+                <div id="caption"></div>
+                </div>
+
+                <!-- SNS公開のON/OFFトグルスイッチ -->
+                <div class="sns-toggle">
+                    <span class="toggle-text">SNS公開</span>
+                    <label class="toggle-button-1">
+                        <!-- publicフィールドの隠しデフォルト値（False） -->
+                        <input type="hidden" name="public" value="off">
+                        <input type="checkbox" name="public" value="on" {% if quote.public or not quote.pk %}checked{% endif %}>
+                    </label>
+                </div>
+
+                <!-- コメント表示 -->
+                <div class="comments">
+                    <ul>
+                        {% for comment in comments %}
+                        <li>
+                            
+                            <p>{{ comment.user.username }}   {{ comment.created_at|date:"Y/m/d H:i" }}</p>
+                            <p>    {{ comment.content }}</p>
+                            {% if comment.user == request.user %}
+                            <form method="post" action="{% url 'comment_delete' comment.id %}">
+                                {% csrf_token %}
+                                <button type="submit">削除</button>
+                            </form>
+                            {% endif %}
+                        </li>
+                        {% empty %}
+                        <li>コメントはまだありません。</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- コメント追加フォーム -->
+                <div class="comment-form">
+                    <!-- <h3>コメントを追加</h3> -->
+                    <form method="post">
+                        {% csrf_token %}
+                        <textarea name="content" placeholder="コメントする"></textarea>
+                        <button type="submit">コメントを投稿</button>
+                    </form>
+                </div>
+            </section>
+
+        </div> <!-- 大枠の終了 -->
+    </main>
+
+    <script src="{% static 'js/modal.js' %}"></script>
+</body>
+</html>
+

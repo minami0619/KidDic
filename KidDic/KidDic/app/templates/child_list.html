@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KidDic - 名言編集</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/form_styles.css' %}">
+</head>
+<body>
+
+    <!-- ハンバーガーメニュー -->
+    <header class="header">
+        <div class="navtext-container">
+            <a href="{% url 'home' %}" class="navtext">KidDic</a>
+        </div>
+        <input type="checkbox" class="menu-btn" id="menu-btn">
+        <label for="menu-btn" class="menu-icon"><span class="navicon"></span></label>
+        <ul class="menu">
+            <li><a href="{% url 'account_info' %}">アカウント情報変更</a></li>
+            <li><a href="{% url 'child_list' %}">お子さま一覧</a></li>
+            <li><a href="{% url 'family_invite' %}">家族招待</a></li>
+            <li><a href="{% url 'logout' %}">ログアウト</a></li>
+        </ul>
+    </header>
+
+    <main>
+        <!-- 大枠の開始 -->
+        <div class="quote-container">
+            <h2 class="child-list-title">お子さま一覧</h2> <!-- タイトルを大枠の上部に配置 -->
+            <section class="quote-detail">
+                <div class="child-list">
+                    {% for child in children %}
+                    <div class="child-entry">
+                        <div class="child-info">
+                            <span>{{ child.nickname }}</span>
+                            <span>{{ child.birthdate }} 生</span>
+                        </div>
+                        <div class="child-actions">
+                            <a href="{% url 'child_edit' child.id %}">
+                                <button type="button">編集</button>
+                            </a>
+                            <form method="POST" action="{% url 'child_delete' child.id %}" class="delete-form">
+                                {% csrf_token %}
+                                <button type="submit" onclick="return confirm('本当に削除しますか？');">削除</button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    <div class="child-entry-add">
+                        <a href="{% url 'child_add' %}">
+                            <button type="button" class="add-child-btn">お子さま追加</button>
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </main>    
+           
+</body>
+</html>
