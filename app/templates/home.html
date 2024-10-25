@@ -101,7 +101,9 @@
                             {% endif %}
                             <!-- Xシェアボタン -->
                             <div class="twitter-share">
-                                <a href="https://twitter.com/intent/tweet?text=今日の  {{ quote.child.nickname }}  の名言%0A『{{ quote.content }}』%0A意味 :{{ quote.description }}%0A %0A KidDic :" class="twitter-share-button" target="_blank">Tweet</a> 
+                                <a href="https://twitter.com/intent/tweet?text=今日の{{ quote.child.nickname }}の名言%0A『{{ quote.content }}』%0A意味: {{ quote.description }}%0A%0A KidDic: {{ public_quote_url }}" class="twitter-share-button" target="_blank">
+                                </a>
+
                             </div>
                             <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
                             <!-- コメント数 -->
