@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KidDic - 名言辞典</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <style>
+        .no-click {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+    <!-- ハンバーガーメニューの実装 -->
+    <header class="header">
+        <div class="navtext-container">
+            <a href="{% url 'home' %}" class="navtext">KidDic</a>
+        </div>
+        <input type="checkbox" class="menu-btn" id="menu-btn">
+        <label for="menu-btn" class="menu-icon"><span class="navicon"></span></label>
+        <ul class="menu {% if not user.is_authenticated %}no-click{% endif %}">
+            <li><a href="{% url 'account_info' %}">アカウント情報変更</a></li>
+            <li><a href="{% url 'child_list' %}">お子さま一覧</a></li>
+            <li><a href="{% url 'family_invite' %}">家族招待</a></li>
+            <li><a href="{% url 'logout' %}">ログアウト</a></li>
+        </ul>
+    </header>
+   
+
+    <main>
+        <!-- 検索フォーム -->
+        <section class="search-section">
+            <form method="get" action="{% url 'home' %}" class="search-form">
+                <input type="text" name="keyword" placeholder="キーワード" value="{{ request.GET.keyword }}" class="search-input">
+
+                <!-- 年月の選択肢 -->
+                <input type="month" id="year_month" name="year_month" class="search-select" value="{{ request.GET.year_month }}">
+
+                <!-- カテゴリの選択肢 -->
+                <select name="category" class="search-select">
+                    <option value="">カテゴリ</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}" {% if request.GET.category == category.id %}selected{% endif %}>{{ category.category_name }}</option>
+                    {% endfor %}
+                </select>
+
+                <!-- 発言者の選択肢 -->
+                <select name="speaker" class="search-select">
+                    <option value="">発言者</option>
+                    {% for child in children %}
+                        <option value="{{ child.nickname }}" {% if request.GET.speaker == child.nickname %}selected{% endif %}>{{ child.nickname }}</option>
+                    {% endfor %}
+                </select>
+
+                <!-- 検索ボタン -->
+                <button type="submit" class="search-btn">検索</button>
+
+                <!-- ソート順の選択肢 -->
+                <form method="get">
+                    <select name="sort_order" class="search-select" onchange="this.form.submit()">
+                        <option value="newest" {% if request.GET.sort_order == 'newest' %}selected{% endif %}>新着順</option>
+                        <option value="alphabet" {% if request.GET.sort_order == 'alphabet' %}selected{% endif %}>五十音順</option>
+                        <option value="year" {% if request.GET.sort_order == 'year' %}selected{% endif %}>年代順</option>
+                    </select>
+                </form>
+                
+                                             
+            </form>
+        </section>
+
+        <!-- 名言カード -->
+        <section class="quote-list">
+            <div class="quote-grid">
+                {% for quote in quotes %}
+                <a href="{% url 'quote_detail' quote.id %}" class="quote-card-link {% if not user.is_authenticated %}no-click{% endif %}">
+                    <div class="quote-card">
+                        <div class="child-info-container">
+                            <div class="child-info">
+                                <span>{{ quote.child.nickname }}</span>
+                                <span>{{ quote.child.age }}</span>
+                            </div>
+                            <div class="date-info">
+                                {% if quote.start_date %}
+                                    {{ quote.start_date|date:"Y/m/d" }}
+                                    {% if quote.end_date %}
+                                        ～ {{ quote.end_date|date:"Y/m/d" }}
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="quote-content">
+                            「  {{ quote.content }}  」
+                        </div>
+                        {% if quote.description %}
+                            <p class="quote-description">{{ quote.description }}</p>
+                        {% endif %}
+                        <div class="quote-actions">
+                            {% if quote.image %}
+                            <img src="{{ quote.image.url }}" alt="quote image" class="quote-image">
+                            {% endif %}
+                            <!-- Xシェアボタン -->
+                            <div class="twitter-share">
+                                <a href="https://twitter.com/intent/tweet?text=今日の  {{ quote.child.nickname }}  の名言%0A『{{ quote.content }}』%0A意味 :{{ quote.description }}%0A %0A KidDic :" class="twitter-share-button" target="_blank">Tweet</a> 
+                            </div>
+                            <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+                            <!-- コメント数 -->
+                            <div class="comment-count">
+                                <svg class="comment-icon" viewBox="0 0 24 24">
+                                    <path d="M21 6h-18c-1.1 0-2 0.9-2 2v8c0 1.1 0.9 2 2 2h4v3l3-3h11c1.1 0 2-0.9 2-2v-8c0-1.1-0.9-2-2-2zm0 10h-13.17l-1.41 1.41v-1.41h-4v-8h18v8z"/>
+                                </svg>
+                                <span>{{ quote.comment_set.count }}</span>
+                            </div>
+                            <!-- 編集ボタン -->
+                            {% if user.is_authenticated %}                           
+                            <a href="{% url 'quote_edit' quote.id %}" class="edit-button" onclick="event.stopPropagation();">編集</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+                {% empty %}
+                <div class="quote-card">
+                    <p>名言が登録されていません。</p>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+    </main>   
+
+    {% if user.is_authenticated %}
+    <!-- モーダルの構造 -->
+    <div id="modalBackground" class="modal-background"></div>
+    <div id="quoteModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeQuoteModal()">&times;</span>
+            <form method="post" action="{% url 'home' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-header">
+                    <select name="child" id="child" class="child-select" required>
+                        {% for child in children %}
+                            <option value="{{ child.id }}">{{ child.nickname }}</option>
+                        {% endfor %}
+                    </select>
+                    <h2>の名言を登録する</h2>
+                </div>
+
+                <!-- 名言 -->
+                <label for="content">名言 <span style="color:red;">※必須</span></label>
+                <input type="text" name="content" id="content" required>
+                
+                <!-- 日付 -->
+                <div class="date-range">
+                    <label for="start_date">日付</label>
+                    <div class="date-inputs">
+                        <input type="date" name="start_date" id="start_date" class="date-input">
+                        <span class="date-separator">〜</span>
+                        <input type="date" name="end_date" id="end_date" class="date-input">
+                    </div>
+                </div>                
+
+                <!-- 説明 -->
+                <label for="description">説明</label>
+                <textarea name="description" id="description"></textarea>
+
+                <!-- カテゴリ -->
+                <label for="category">カテゴリ</label>
+                <select name="category" id="category">
+                    <option value="">--選択してください--</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}" {% if category.id == quote.category.id %}selected{% endif %}>{{ category.category_name }}</option>
+                    {% endfor %}
+                </select>                
+
+                <!-- 画像選択 -->
+                <label for="image">写真</label>
+                <input type="file" name="image" id="image">
+                 
+                <!-- 登録ボタン -->
+                <button type="submit">登録</button>
+            </form>                         
+        </div>
+    </div>
+            
+
+    <!-- 固定ボタンでモーダルを開く -->
+    <button class="fixed-add-btn" onclick="openQuoteModal()">+</button>
+    {% endif %}
+    <script src="{% static 'js/modal.js' %}"></script>
+</body>
+</html>
