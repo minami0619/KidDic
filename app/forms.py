@@ -70,11 +70,11 @@ class QuoteForm(forms.ModelForm):
     category = forms.ModelChoiceField(queryset=Category.objects.all(), required=False)
     
     # SNS公開のチェックボックスフィールドを追加
-    public = forms.BooleanField(
-        required=False,
-        label="SNS非公開にする",
-        initial=False  # チェックなしが公開
-    )
+    # public = forms.BooleanField(
+    #     required=False,
+    #     label="SNS非公開にする",
+    #     initial=False  # チェックなしが公開
+    # )
 
     class Meta:
         model = Quote

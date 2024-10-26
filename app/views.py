@@ -37,7 +37,7 @@ class SignupView(View):
              # 使用するバックエンドを指定してログイン
             backend = get_backends()[0]  # 最初のバックエンドを選択
             login(request, user, backend=backend.__class__.__name__)
-            
+
             return post_login_redirect(user)  # 共通のリダイレクト関数を使用
         return render(request, "signup.html", context={
             "form": form
@@ -135,15 +135,15 @@ class HomeView(LoginRequiredMixin, View):
             quote.description = form.cleaned_data.get('description')
             quote.category = form.cleaned_data.get('category')
             quote.user = request.user
-            print("Public field:", form.cleaned_data.get('public'))  # デバッグ用
+            # print("Public field:", form.cleaned_data.get('public'))  # デバッグ用
             
-            # publicフィールドの処理: 'on' か 'off' をチェック
-            if request.POST.get('public') == 'on':
-                quote.public = True
-            else:
-                quote.public = False
-            quote.save()
-            return redirect('home')
+            # # publicフィールドの処理: 'on' か 'off' をチェック
+            # if request.POST.get('public') == 'on':
+            #     quote.public = True
+            # else:
+            #     quote.public = False
+            # quote.save()
+            # return redirect('home')
 
         # エラー時のレンダリング
         family = request.user.family
