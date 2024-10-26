@@ -14,7 +14,7 @@ from .forms import QuoteForm
 from .models import Child, Quote, Category
 from django.utils import timezone
 from django.urls import reverse
-from django.http import HttpResponseForbidden
+from django.contrib.auth import get_backends, login
 
 
 # Create your views here.
@@ -34,7 +34,10 @@ class SignupView(View):
         form = SignupForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)
+             # 使用するバックエンドを指定してログイン
+            backend = get_backends()[0]  # 最初のバックエンドを選択
+            login(request, user, backend=backend.__class__.__name__)
+            
             return post_login_redirect(user)  # 共通のリダイレクト関数を使用
         return render(request, "signup.html", context={
             "form": form
@@ -70,10 +73,16 @@ class HomeView(LoginRequiredMixin, View):
     login_url = "login"
 
     def get(self, request, *args, **kwargs):
-        family = request.user.family
-        quotes = Quote.objects.filter(child__family=family).order_by('-created_at')
-        children = Child.objects.filter(family=family)
-        categories = Category.objects.all()
+        # ユーザーが認証されていない場合、公開状態の名言のみ表示
+        if not request.user.is_authenticated:
+            quotes = Quote.objects.filter(public=True)
+            family = None
+            children = None
+        else:
+            family = request.user.family
+            # ユーザーのファミリーに関連する名言を取得
+            quotes = Quote.objects.filter(child__family=family).order_by('-created_at')
+            children = Child.objects.filter(family=family)
 
         # フィルタリング条件を取得
         keyword = request.GET.get('keyword')
@@ -105,7 +114,7 @@ class HomeView(LoginRequiredMixin, View):
         categories = Category.objects.all()
 
         # フォームの設定
-        form = QuoteForm()
+        form = QuoteForm() if request.user.is_authenticated else None
 
         # テンプレートにデータを渡してレンダリング
         return render(request, 'home.html', {
@@ -126,7 +135,13 @@ class HomeView(LoginRequiredMixin, View):
             quote.description = form.cleaned_data.get('description')
             quote.category = form.cleaned_data.get('category')
             quote.user = request.user
-
+            print("Public field:", form.cleaned_data.get('public'))  # デバッグ用
+            
+            # publicフィールドの処理: 'on' か 'off' をチェック
+            if request.POST.get('public') == 'on':
+                quote.public = True
+            else:
+                quote.public = False
             quote.save()
             return redirect('home')
 
@@ -333,15 +348,3 @@ class FamilySignupView(View):
             login(request, user)
             return redirect('home')
         return render(request, 'family_signup.html', {'form': form, 'invite_url': invite_url})  # フォームが無効だった場合
-
-class PublicQuoteView(View):
-    def get(self, request, user_id):
-        user = get_object_or_404(User, id=user_id)
-        
-        # 公開設定された名言のみを取得
-        quotes = Quote.objects.filter(user=user, public=True)
-        
-        if not user.is_public:
-            return HttpResponseForbidden("このユーザーの名言は公開されていません。")
-        
-        return render(request, 'public_quote_list.html', {'quotes': quotes, 'user': user})
