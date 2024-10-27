@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -71,14 +73,35 @@
             margin-top: 20px;
             line-height: 3; /* リンク間のスペースを広げる */
         }
+
+        /* 画像コンテナを横並びに配置 */
+        .image-container {
+            display: flex;
+            justify-content: center; /* コンテナ内の要素を中央揃え */
+            gap: 10px; /* 画像間の隙間 */
+            margin-bottom: 20px; /* 画像下に余白 */
+        }
+
+        /* 画像のサイズを指定 */
+        .portfolio-image {
+            width: 45%; /* 画像の幅を設定（必要に応じて調整） */
+            height: auto;
+            border-radius: 8px; /* 角を少し丸める */
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>KidDic</h1>
+        <h1>作品No.1 KidDic</h1>
         <p>KidDicは、家族で子どもの名言を記録し、共有できるアプリです。<br>
            子どもの成長とともに、思い出に残る名言を簡単に登録・検索・共有することができます。
         </p>
+
+        <!-- 画像を横並びで表示するテーブル -->
+        <div class="image-container">
+            <img src="{% static 'images/portfolio_image.png' %}" class="portfolio-image">
+            <img src="{% static 'images/portfolio_image2.jpg' %}" class="portfolio-image">
+        </div>
 
         <div class="links">
             <!-- 企画書のボタン -->

@@ -114,7 +114,9 @@
                 <button type="submit">登録</button>
             </div>
         </form>
-        <a href="{% url 'home' %}">ホームへ戻る</a>
+        {% if not is_first_login %}
+        <a href="{% url 'home' %}" class="btn btn-primary">ホームに戻る</a>
+        {% endif %}
     </div>
 
     <script src="{% static 'js/child_registration.js' %}"></script>
