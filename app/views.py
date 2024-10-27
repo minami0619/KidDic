@@ -15,6 +15,7 @@ from .models import Child, Quote, Category
 from django.utils import timezone
 from django.urls import reverse
 from django.contrib.auth import get_backends, login
+from django.conf import settings
 
 
 # Create your views here.
@@ -34,7 +35,7 @@ class SignupView(View):
         form = SignupForm(request.POST)
         if form.is_valid():
             user = form.save()
-             # 使用するバックエンドを指定してログイン
+            # 使用するバックエンドを指定してログイン
             backend = get_backends()[0]  # 最初のバックエンドを選択
             login(request, user, backend=backend.__class__.__name__)
 
@@ -73,16 +74,26 @@ class HomeView(LoginRequiredMixin, View):
     login_url = "login"
 
     def get(self, request, *args, **kwargs):
-        # ユーザーが認証されていない場合、公開状態の名言のみ表示
-        if not request.user.is_authenticated:
-            quotes = Quote.objects.filter(public=True)
-            family = None
-            children = None
-        else:
-            family = request.user.family
-            # ユーザーのファミリーに関連する名言を取得
-            quotes = Quote.objects.filter(child__family=family).order_by('-created_at')
-            children = Child.objects.filter(family=family)
+        # 子ども情報が未登録の場合は、お子さま登録画面にリダイレクト
+        if not Child.objects.filter(family=request.user.family).exists():
+            return redirect("child_add")
+
+        # ここからは通常のホーム画面の処理
+        family = request.user.family
+        quotes = Quote.objects.filter(child__family=family).order_by('-created_at')
+        children = Child.objects.filter(family=family)
+
+    # def get(self, request, *args, **kwargs):
+    #     # ユーザーが認証されていない場合、公開状態の名言のみ表示
+    #     if not request.user.is_authenticated:
+    #         quotes = Quote.objects.filter(public=True)
+    #         family = None
+    #         children = None
+    #     else:
+    #         family = request.user.family
+    #         # ユーザーのファミリーに関連する名言を取得
+    #         quotes = Quote.objects.filter(child__family=family).order_by('-created_at')
+    #         children = Child.objects.filter(family=family)
 
         # フィルタリング条件を取得
         keyword = request.GET.get('keyword')
@@ -135,6 +146,10 @@ class HomeView(LoginRequiredMixin, View):
             quote.description = form.cleaned_data.get('description')
             quote.category = form.cleaned_data.get('category')
             quote.user = request.user
+            quote.save()  # データベースに保存
+            return redirect('home')  # 保存後にリダイレクト
+        else:
+            print(form.errors)  # エラー内容を出力
             # print("Public field:", form.cleaned_data.get('public'))  # デバッグ用
             
             # # publicフィールドの処理: 'on' か 'off' をチェック
@@ -345,6 +360,8 @@ class FamilySignupView(View):
             family = Family.objects.get(invite_url=invite_url)
             user.family = family
             user.save()
-            login(request, user)
+            # 使用するバックエンドを指定してログイン
+            backend = settings.AUTHENTICATION_BACKENDS[0]
+            login(request, user, backend=backend)
             return redirect('home')
         return render(request, 'family_signup.html', {'form': form, 'invite_url': invite_url})  # フォームが無効だった場合
