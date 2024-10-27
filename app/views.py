@@ -39,31 +39,27 @@ class SignupView(View):
             backend = get_backends()[0]  # 最初のバックエンドを選択
             login(request, user, backend=backend.__class__.__name__)
 
-            return post_login_redirect(user, request)  # 共通のリダイレクト関数を使用
+            return post_login_redirect(user)  # 共通のリダイレクト関数を使用
         return render(request, "signup.html", context={
             "form": form
         })
 
-def post_login_redirect(user, request):
-    """初回ログイン時かつ子ども情報が未登録の場合のみ、お子さま登録画面にリダイレクト"""
-    # 初回ログインかつセッションフラグがない場合のみリダイレクト
-    if user.is_first_login and not request.session.get("initial_redirect_done"):
-        if not Child.objects.filter(family=user.family).exists():
-            # 初回リダイレクトが必要な場合のみフラグを設定
-            request.session["initial_redirect_done"] = True
-            return redirect("child_add")
-        
-        # 初回リダイレクト不要ならフラグをFalseにして保存
-        user.is_first_login = False
+def post_login_redirect(user):
+    """初回ログイン時のみお子さま登録画面にリダイレクト"""
+    if user.is_first_login:
+        user.is_first_login = False  # 初回ログインフラグをFalseに変更
         user.save()
-
-    # 通常のホーム画面にリダイレクト
+        
+        # 子どもの登録がない場合にお子さま登録画面にリダイレクト
+        if not Child.objects.filter(family=user.family).exists():
+            return redirect("child_add")
+    
+    # 子どもが既に登録されている場合、または初回ログインでない場合はホームにリダイレクト
     return redirect("home")
-
 
 class LoginView(View):
     def dispatch(self, request, *args, **kwargs):
-        # ログイン済みの場合、ポートフォリオや他の画面からアクセスしてもホーム画面へ
+        # ユーザーが認証されている場合、ホーム画面にリダイレクト
         if request.user.is_authenticated:
             return redirect('home')
         return super().dispatch(request, *args, **kwargs)
@@ -79,42 +75,17 @@ class LoginView(View):
         if form.is_valid():
             user = form.user
             login(request, user)
-            return post_login_redirect(user, request)  # ログイン時にのみリダイレクト確認
+            return post_login_redirect(user)  # 共通のリダイレクト関数を使用
         return render(request, "login.html", context={"form": form})
-
-
 
 class HomeView(LoginRequiredMixin, View):
     login_url = "login"
 
     def get(self, request, *args, **kwargs):
-        # すべての変数をリダイレクトの条件に関係なく初期化
-        family = request.user.family if request.user.is_authenticated else None
-        quotes = Quote.objects.filter(child__family=family).order_by('-created_at') if family else Quote.objects.none()
-        children = Child.objects.filter(family=family) if family else None
-        categories = Category.objects.all()
-        form = QuoteForm() if request.user.is_authenticated else None
-
-        # # 初回リダイレクト後のセッションを確認し、フラグがあればリダイレクトをスキップ
-        # if request.user.is_authenticated:
-        #     if not request.session.get("initial_redirect_done") and not Child.objects.filter(family=family).exists():
-        #         request.session["initial_redirect_done"] = True  # フラグを設定
-        #         return redirect("child_add")
-
-        # # ホーム画面を表示する際には初回リダイレクトフラグをクリア
-        # request.session.pop("initial_redirect_done", None)
-
-    # def get(self, request, *args, **kwargs):
-    #     # ユーザーが認証されていない場合、公開状態の名言のみ表示
-    #     if not request.user.is_authenticated:
-    #         quotes = Quote.objects.filter(public=True)
-    #         family = None
-    #         children = None
-    #     else:
-    #         family = request.user.family
-    #         # ユーザーのファミリーに関連する名言を取得
-    #         quotes = Quote.objects.filter(child__family=family).order_by('-created_at')
-    #         children = Child.objects.filter(family=family)
+        # リダイレクト処理を行わず、ホーム画面を表示するための情報を取得
+        family = request.user.family
+        quotes = Quote.objects.filter(child__family=family).order_by('-created_at')
+        children = Child.objects.filter(family=family)
 
         # フィルタリング条件を取得
         keyword = request.GET.get('keyword')
@@ -142,6 +113,12 @@ class HomeView(LoginRequiredMixin, View):
         elif sort_order == 'alphabet':
             quotes = quotes.order_by('content')
 
+        # すべてのカテゴリを取得
+        categories = Category.objects.all()
+
+        # フォームの設定
+        form = QuoteForm() if request.user.is_authenticated else None
+
         # テンプレートにデータを渡してレンダリング
         return render(request, 'home.html', {
             'quotes': quotes,
@@ -165,15 +142,6 @@ class HomeView(LoginRequiredMixin, View):
             return redirect('home')  # 保存後にリダイレクト
         else:
             print(form.errors)  # エラー内容を出力
-            # print("Public field:", form.cleaned_data.get('public'))  # デバッグ用
-            
-            # # publicフィールドの処理: 'on' か 'off' をチェック
-            # if request.POST.get('public') == 'on':
-            #     quote.public = True
-            # else:
-            #     quote.public = False
-            # quote.save()
-            # return redirect('home')
 
         # エラー時のレンダリング
         family = request.user.family
@@ -207,9 +175,6 @@ class AccountInfoView(LoginRequiredMixin, View):
             user.email = form.cleaned_data['email']
             user.save()  # ユーザー情報を保存
 
-            # セッションフラグを削除してリダイレクトループを防止
-            request.session.pop("first_login_redirect", None)
-
             # パスワードの変更
             current_password = form.cleaned_data.get('current_password')
             new_password = form.cleaned_data.get('password1')
@@ -228,16 +193,7 @@ class AccountInfoView(LoginRequiredMixin, View):
 
 class ChildCreateView(View):
     def get(self, request):
-        # 初回ログイン時かどうかのフラグを取得し、初回アクセス時のみFalseに設定
-        is_first_login = request.user.is_first_login if request.user.is_authenticated else False
-        if is_first_login:
-            request.user.is_first_login = False
-            request.user.save()  # フラグをFalseに設定し、次回以降は初回として扱わない
-
-        return render(request, 'child_form.html', {
-            'today_date': now().date(),
-            'is_first_login': is_first_login
-        })
+        return render(request, 'child_form.html', {'today_date': now().date()})
 
     def post(self, request):
         if request.user.family is None:

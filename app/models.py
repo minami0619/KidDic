@@ -19,7 +19,7 @@ class User(AbstractUser):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     family = models.ForeignKey('Family', on_delete=models.SET_NULL, null=True, blank=True, related_name="members")  # 家族との関連付け
-    is_first_login = models.BooleanField(default=True, null=True)
+    is_first_login = models.BooleanField(default=True)
 
     USERNAME_FIELD = "username"
     EMAIL_FIELD = "email"
