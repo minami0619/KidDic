@@ -35,9 +35,7 @@ class SignupView(View):
         form = SignupForm(request.POST)
         if form.is_valid():
             user = form.save()
-            # 使用するバックエンドを指定してログイン
-            backend = get_backends()[0]  # 最初のバックエンドを選択
-            login(request, user, backend=backend.__class__.__name__)
+            login(request, user)
 
             return post_login_redirect(user)  # 共通のリダイレクト関数を使用
         return render(request, "signup.html", context={
@@ -82,6 +80,8 @@ class HomeView(LoginRequiredMixin, View):
     login_url = "login"
 
     def get(self, request, *args, **kwargs):
+        # ホームの絶対URLを取得してコンテキストに追加
+        home_url = request.build_absolute_uri(reverse("home"))
         # リダイレクト処理を行わず、ホーム画面を表示するための情報を取得
         family = request.user.family
         quotes = Quote.objects.filter(child__family=family).order_by('-created_at')
@@ -125,6 +125,7 @@ class HomeView(LoginRequiredMixin, View):
             'children': children,
             'categories': categories,
             'form': form,
+            'home_url': home_url,  # ホームURLをテンプレートに渡す
         })
 
     def post(self, request):
@@ -303,7 +304,7 @@ class QuoteEditView(View):
     def post(self, request, pk):
         # 名言を取得し、フォームからのデータで更新
         quote = get_object_or_404(Quote, pk=pk)
-        form = QuoteForm(request.POST, instance=quote)
+        form = QuoteForm(request.POST, request.FILES, instance=quote)
         if form.is_valid():
             form.save()  # 名言を保存
             return redirect('home')  # ホーム画面にリダイレクト

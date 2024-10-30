@@ -54,7 +54,7 @@
 
                 {% if quote.description %}
                 <div class="quote-description">
-                    <p>{{ quote.description }}</p>
+                    <p>{{ quote.description|linebreaks }}</p>
                 </div>
                 {% endif %}
 
@@ -79,7 +79,7 @@
                         <li>
                             
                             <p>{{ comment.user.username }}   {{ comment.created_at|date:"Y/m/d H:i" }}</p>
-                            <p>    {{ comment.content }}</p>
+                            <p>    {{ comment.content|linebreaks }}</p>
                             {% if comment.user == request.user %}
                             <form method="post" action="{% url 'comment_delete' comment.id %}">
                                 {% csrf_token %}

@@ -6,12 +6,12 @@
     <title>KidDic - 名言辞典</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <style>
+    <!-- <style>
         .no-click {
             pointer-events: none;
             opacity: 0.6;
         }
-    </style>
+    </style> -->
 </head>
 <body>
     <!-- ハンバーガーメニューの実装 -->
@@ -93,7 +93,7 @@
                             「  {{ quote.content }}  」
                         </div>
                         {% if quote.description %}
-                            <p class="quote-description">{{ quote.description }}</p>
+                            <div class="quote-description">{{ quote.description|linebreaksbr|safe }}</div>
                         {% endif %}
                         <div class="quote-actions">
                             {% if quote.image %}
@@ -101,11 +101,10 @@
                             {% endif %}
                             <!-- Xシェアボタン -->
                             <div class="twitter-share">
-                                <a href="https://twitter.com/intent/tweet?text=今日の{{ quote.child.nickname }}の名言%0A『{{ quote.content }}』%0A意味: {{ quote.description }}%0A%0A KidDic: {{ public_quote_url }}" class="twitter-share-button" target="_blank">
+                                <a href="https://twitter.com/intent/tweet?text=今日の{{ quote.child.nickname }}の名言%0A『{{ quote.content }}』%0A意味: {{ quote.description }}%0A%0A KidDic: {{ home_url|safe }}" class="twitter-share-button" target="_blank">
+                                    シェアする
                                 </a>
-
                             </div>
-                            <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
                             <!-- コメント数 -->
                             <div class="comment-count">
                                 <svg class="comment-icon" viewBox="0 0 24 24">
@@ -193,5 +192,6 @@
         <p>閲覧のみ可能です。投稿するには<a href="{% url 'login' %}">ログイン</a>してください。</p>
     {% endif %}
     <script src="{% static 'js/modal.js' %}"></script>
+    <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 </body>
 </html>
