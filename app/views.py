@@ -16,6 +16,7 @@ from django.utils import timezone
 from django.urls import reverse
 from django.contrib.auth import get_backends, login
 from django.conf import settings
+from django.utils.http import urlencode
 
 
 # Create your views here.
@@ -112,6 +113,10 @@ class HomeView(LoginRequiredMixin, View):
             quotes = quotes.order_by('created_at')
         elif sort_order == 'alphabet':
             quotes = quotes.order_by('content')
+        
+        # 各quoteにabsolute_urlを追加
+        for quote in quotes:
+            quote.absolute_url = request.build_absolute_uri(quote.get_absolute_url())
 
         # すべてのカテゴリを取得
         categories = Category.objects.all()
@@ -139,6 +144,10 @@ class HomeView(LoginRequiredMixin, View):
             quote.description = form.cleaned_data.get('description')
             quote.category = form.cleaned_data.get('category')
             quote.user = request.user
+            # form.cleaned_dataを使って`public`が保存されるようにする
+            quote.public = form.cleaned_data.get('public', True)  # フォームから`public`のデータを取得
+            # if 'public' not in form.cleaned_data:
+            #     quote.public = True
             quote.save()  # データベースに保存
             return redirect('home')  # 保存後にリダイレクト
         else:

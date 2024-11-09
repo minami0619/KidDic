@@ -3,7 +3,6 @@ from django.contrib.auth.forms import UserCreationForm
 from app.models import User, Child, Quote, Comment, Category
 from django.contrib.auth import authenticate
 from django.utils.timezone import now
-from django.forms.widgets import SelectDateWidget
 import datetime
 
 class SignupForm(UserCreationForm):
@@ -68,17 +67,15 @@ class QuoteForm(forms.ModelForm):
     start_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
     end_date = forms.DateField(required=False, widget=forms.DateInput(attrs={'type': 'date'}))
     category = forms.ModelChoiceField(queryset=Category.objects.all(), required=False)
-    
-    # SNS公開のチェックボックスフィールドを追加
-    # public = forms.BooleanField(
-    #     required=False,
-    #     label="SNS非公開にする",
-    #     initial=False  # チェックなしが公開
-    # )
 
     class Meta:
         model = Quote
         fields = ['child', 'content', 'description', 'start_date', 'end_date', 'image', 'category', 'public']
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.instance.pk:
+            self.fields['public'].initial = True
 
 class CommentForm(forms.ModelForm):
     class Meta:

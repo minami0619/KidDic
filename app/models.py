@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
 from django.utils import timezone
+from django.urls import reverse
 import uuid
 
 
@@ -78,6 +79,9 @@ class Quote(models.Model):
 
     def __str__(self):
         return self.content
+    
+    def get_absolute_url(self):
+        return reverse('quote_detail', args=[str(self.id)])
 
 
 class Comment(models.Model):

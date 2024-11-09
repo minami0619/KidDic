@@ -588,6 +588,27 @@
 }
 
 
+/* 画像クリアのカスタムテンプレート */
+.custom-clearable-file-input {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.custom-clearable-file-input label {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.custom-clearable-file-input a {
+  text-decoration: underline;
+  color: blue;
+}
+
+.custom-clearable-file-input input[type="file"] {
+  margin-top: 5px;
+}
+
 
 /* ハンバーガーメニューのCSS */
 body {
