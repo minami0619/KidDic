@@ -74,8 +74,8 @@ class QuoteForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if not self.instance.pk:
-            self.fields['public'].initial = True
+        if not self.instance.pk:  # 新規作成時
+            self.fields['public'].initial = True  # デフォルトで公開
 
 class CommentForm(forms.ModelForm):
     class Meta:

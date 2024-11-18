@@ -72,14 +72,11 @@
                         
                         <!-- SNS公開チェックボックス -->
                         <div class="sns-visibility">
-                            {{ form.public }}  <!-- フォームから直接表示することで、初期値がフォームに反映されます -->
-                        </div>
-                        <!-- <div class="sns-visibility">
-                            <label for="public">
-                                <input type="checkbox" name="public" id="public" class="checkbox-class">
+                            <label for="id_public">
+                                {{ form.public }}
                                 SNS非公開にする
                             </label>
-                        </div>                         -->
+                        </div>
                                                                      
                         
                         <!-- 保存・削除ボタン -->

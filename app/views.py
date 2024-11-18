@@ -135,23 +135,26 @@ class HomeView(LoginRequiredMixin, View):
 
     def post(self, request):
         form = QuoteForm(request.POST, request.FILES)
-        print("Form data:", request.POST) 
+        print("Form data (POST):", request.POST)  # POSTデータ全体を確認
+        print("Is form valid?:", form.is_valid())  # フォームのバリデーション状態
+
         if form.is_valid():
-            quote = form.save(commit=False)
-            quote.start_date = form.cleaned_data.get('start_date')
-            quote.end_date = form.cleaned_data.get('end_date')
-            quote.child = form.cleaned_data.get('child')
-            quote.description = form.cleaned_data.get('description')
-            quote.category = form.cleaned_data.get('category')
-            quote.user = request.user
-            # form.cleaned_dataを使って`public`が保存されるようにする
-            quote.public = form.cleaned_data.get('public', True)  # フォームから`public`のデータを取得
-            # if 'public' not in form.cleaned_data:
-            #     quote.public = True
-            quote.save()  # データベースに保存
-            return redirect('home')  # 保存後にリダイレクト
+            quote = form.save(commit=False)  # commit=Falseでフォームの値を取得
+            print("Form.cleaned_data:", form.cleaned_data)  # フォームのクリーンデータ
+            print("Public value from form.cleaned_data:", form.cleaned_data.get('public'))  # `public`の値
+
+            # `public`がフォームから送信されない場合、デフォルトをTrueに設定
+            quote.public = form.cleaned_data.get('public', True)
+            print("Public value before save:", quote.public)
+
+            # 保存
+            quote.user = request.user  # 現在のユーザーを設定
+            quote.save()
+            print("Public value after save:", quote.public)  # 保存後の値を確認
+
+            return redirect('home')  # 保存後にホーム画面へリダイレクト
         else:
-            print(form.errors)  # エラー内容を出力
+            print("Form errors:", form.errors)  # バリデーションエラーの内容を表示
 
         # エラー時のレンダリング
         family = request.user.family
@@ -164,6 +167,8 @@ class HomeView(LoginRequiredMixin, View):
             'quotes': quotes,
             'categories': categories,
         })
+
+
 
 class AccountInfoView(LoginRequiredMixin, View):
     def get(self, request):
