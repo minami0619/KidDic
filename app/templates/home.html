@@ -102,7 +102,7 @@
                             <!-- Xシェアボタン -->
                             <div class="twitter-share">
                                 {% if quote.public %}
-                                    <a href="https://twitter.com/intent/tweet?text=今日の{{ quote.child.nickname }}の名言%0A『{{ quote.content }}』%0A意味: {{ quote.description }}%0A%0A KidDic: {{ quote.absolute_url }}" class="twitter-share-button" target="_blank">
+                                    <a href="https://twitter.com/intent/tweet?text=今日の{{ quote.child.nickname }}の名言%0A『{{ quote.content }}』%0A意味: {{ quote.description }}%0A%0A KidDic: &url={{ quote.absolute_url }}" class="twitter-share-button" target="_blank">
                                         シェアする
                                     </a>
                                 {% endif %}
@@ -179,6 +179,12 @@
                 <!-- 画像選択 -->
                 <label for="image">写真</label>
                 <input type="file" name="image" id="image">
+
+                <!-- SNS公開チェックボックス -->
+                <div class="sns-visibility">
+                    <input type="checkbox" style="width: auto;" name="public" id="id_public" checked>
+                    <label for="id_public">SNS公開にする</label>
+                </div>
                  
                 <!-- 登録ボタン -->
                 <button type="submit">登録</button>

@@ -237,7 +237,7 @@ class ChildCreateView(View):
                 'errors': errors
             })
 
-        return redirect('home')
+        return redirect('child_list')
 
 class ChildListView(View):
     def get(self, request):
